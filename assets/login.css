@@ -1,0 +1,107 @@
+:root {
+    --background-color: #000; 
+    --star-color: #FFF; 
+    --form-background: #051b58; 
+    --form-text-color: #FFF; 
+    --label-color: #4963aa; 
+    --button-bg-color: #4963aa; 
+    --button-hover-bg-color: green;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--background-color);
+    position: relative;
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .star {
+    position: absolute;
+    background-color: var(--star-color);
+    border-radius: 50%;
+    animation: twinkling 5s infinite;
+  }
+  
+  @keyframes twinkling {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  .login-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    width: 900px;
+    max-width: 90vw;
+    min-height: 60vh;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .left-column {
+    flex: 1;
+    background-color: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 450px;
+  }
+
+  .right-column {
+    flex: 1;
+    padding: 20px;
+    background-color: var(--form-background);
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    justify-content: center;
+  }
+
+  .right-column h2 {
+    margin-top: 0;
+    font-size: 50px;
+    margin-bottom: 10px; 
+    color: var(--form-text-color);
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+    width: 90%;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--label-color);
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    height: 25px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  button {
+    padding: 10px 20px;
+    background-color: var(--button-bg-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 95%;
+  }
+
+  button:hover {
+    background-color: var(--button-hover-bg-color);
+  }
