@@ -11,5 +11,8 @@
             <li>{{ item.username }} - {{ item.password }}</li>
         {% endfor %}
     </ul>
+    <div class="logout">
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
 </body>
 </html>

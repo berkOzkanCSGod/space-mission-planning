@@ -33,6 +33,17 @@ class Users(models.Model):
             else:
                 return None
 
+    @classmethod
+    def createUser(cls, id, username, password):
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT INTO users (id, username, password) VALUES (%s, %s, %s)", [id, username, password])
+            cursor.execute("SELECT * FROM users WHERE username = %s", [username])
+            row = cursor.fetchone()
+            if row:
+                user = cls(id=row[0], username=row[1], password=row[2])
+                return user
+            else:
+                return None
             
     @classmethod
     def getUserByUsername(cls, username):
