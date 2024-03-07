@@ -105,3 +105,35 @@
   button:hover {
     background-color: var(--button-hover-bg-color);
   }
+
+  /* styles.css */
+.success-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #28a745;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  animation: popup 1s ease-in-out;
+}
+
+@keyframes popup {
+  0% {
+      opacity: 0;
+      transform: translate(-50%, -70%);
+  }
+  50% {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+  }
+  100% {
+      opacity: 0;
+      transform: translate(-50%, -30%);
+  }
+}
+
+.hidden {
+  display: none;
+}
