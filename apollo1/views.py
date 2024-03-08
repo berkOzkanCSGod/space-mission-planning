@@ -35,7 +35,11 @@ def signup(request):
     if (request.method == 'POST'):
         username = request.POST['username']
         password = request.POST['password']
-        user = Users.createUser(random.randint(1, 100), username, password)
+        confirm_password = request.POST['confirm_password']
+        if password != confirm_password:
+            error_message = 'Passwords do not match.'
+            return render(request, 'login.html', {'error_message': error_message})
+        user = Users.createUser(username, password)
         if user != None:
             request.session['user_id'] = user.id
             print("Logged in!")

@@ -34,9 +34,9 @@ class Users(models.Model):
                 return None
 
     @classmethod
-    def createUser(cls, id, username, password):
+    def createUser(cls, username, password):
         with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO users (id, username, password) VALUES (%s, %s, %s)", [id, username, password])
+            cursor.execute("INSERT INTO users (username, password) VALUES ( %s, %s)", [username, password])
             cursor.execute("SELECT * FROM users WHERE username = %s", [username])
             row = cursor.fetchone()
             if row:
