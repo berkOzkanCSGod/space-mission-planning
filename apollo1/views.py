@@ -38,7 +38,7 @@ def signup(request):
         confirm_password = request.POST['confirm_password']
         if password != confirm_password:
             error_message = 'Passwords do not match.'
-            return render(request, 'login.html', {'error_message': error_message})
+            return render(request, 'signup.html', {'error_message': error_message})
         user = Users.createUser(username, password)
         if user != None:
             request.session['user_id'] = user.id
@@ -46,13 +46,13 @@ def signup(request):
             return HttpResponseRedirect(reverse('home'))
         else:
             error_message = 'Invalid username or password.'
-            return render(request, 'login.html', {'error_message': error_message})
+            return render(request, 'signup.html', {'error_message': error_message})
 
     else:
         if 'login_success' in request.session:
             del request.session['login_success']
 
-        return render(request, "login.html")
+        return render(request, "signup.html")
     
 def logout(request):
     if 'user_id' in request.session:
