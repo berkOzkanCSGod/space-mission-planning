@@ -13,7 +13,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import random
 
-@api_view(['GET'])
+@api_view(['GET']) #THIS IS FOR HANDLING THE API REQUESTS COMING FROM REACT
 def hello_world(request):
     return Response({'message': 'Hello, world!'})
 
