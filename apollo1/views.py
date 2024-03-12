@@ -9,7 +9,13 @@ from django.db import connection
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 import random
+
+@api_view(['GET'])
+def hello_world(request):
+    return Response({'message': 'Hello, world!'})
 
 @csrf_exempt
 def login(request):
