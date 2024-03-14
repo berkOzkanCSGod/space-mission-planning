@@ -11,31 +11,26 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import json
 import random
 
 @api_view(['GET']) #THIS IS FOR HANDLING THE API REQUESTS COMING FROM REACT
 def hello_world(request):
     return Response({'message': 'Hello, world!'})
 
-@csrf_exempt
+@api_view(['POST'])
 def login(request):
-    if (request.method == 'POST'):
-        username = request.POST['username']
-        password = request.POST['password']
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
         user = Users.authenticateUser(username, password)
-        if user != None:
-                request.session['user_id'] = user.id
-                print("Logged in!")
-                return HttpResponseRedirect(reverse('home'))
+        if user is not None:
+            request.session['user_id'] = user.id
+            print("Logged in!")
+            return Response({'message': 'Logged in!'})
         else:
-            error_message = 'Invalid username or password.'
-            return render(request, 'login.html', {'error_message': error_message})
-
-    else:
-        if 'login_success' in request.session:
-            del request.session['login_success']
-
-        return render(request, "login.html")
+            return Response({'error_message': 'Invalid username or password.'})
 
 def signup(request):
     if (request.method == 'POST'):
