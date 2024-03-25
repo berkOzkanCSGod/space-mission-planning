@@ -10,7 +10,10 @@ function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     username: '', 
-    password: ''
+    email: '',
+    nation: '',
+    password: '',
+    userType: ''
   });
   const [message, setMessage] = useState('');
 
@@ -19,6 +22,7 @@ function Login() {
       return { ...prev, ...value };
     });
   }
+
   function randomInRange(min, max) {
     return Math.random() * (max - min) + min;
   }
@@ -53,9 +57,9 @@ function Login() {
     };
   }, []);
 
-  async function login(e){
+  async function register(e){
     e.preventDefault();
-    await axios.post('http://localhost:8000/login/', ...form)
+    await axios.post('http://localhost:8000/signup/', ...form)
       .then(response => {
         setMessage(response.data.message);
         if (message === 'Logged in!') {
@@ -86,17 +90,50 @@ function Login() {
             <img src= {spaceship} alt="Login Image"/>
             </div>
             <div class="right-column">
-            <h2>Login</h2>
-            <form onSubmit={login} method="post">
+            <h2>Register</h2>
+            <form onSubmit={register} method="post">
                 <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" value={form.username} onChange={e => updateForm({username: e.target.value})} placeholder="Username" required/>
+                <label for="username">Name:</label>
+                <input type="text" value={form.username} onChange={e => updateForm({username: e.target.value})} placeholder="Name" required/>
+                </div>
+                <div class="form-group">
+                <label for="email">E-Mail:</label>
+                <input type="email" value={form.email} onChange={e => updateForm({email: e.target.value})} placeholder="E-Mail" required/>
+                </div>
+                <div class="form-group">
+                <label for="nation">Nation:</label>
+                <input type="text" value={form.nation} onChange={e => updateForm({nation: e.target.value})} placeholder="Nation" required/>
+                </div>
+                <div class="form-group" style={{display: "flex", alignItems: "center"}}>
+                <label>User Type:</label>
+                <div>
+                    <label>
+                        <input type="radio" value="Astronaut" checked={form.userType === 'Astronaut'} onChange={e => updateForm({userType: e.target.value})} />
+                        Astronaut
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input type="radio" value="Organization" checked={form.userType === 'Organization'} onChange={e => updateForm({userType: e.target.value})} />
+                        Organization
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input type="radio" value="Admin" checked={form.userType === 'Admin'} onChange={e => updateForm({userType: e.target.value})} />
+                        Admin
+                    </label>
+                </div>
                 </div>
                 <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" value={form.password} onChange={e => updateForm({password: e.target.value})} placeholder="Password" required/>
                 </div>
-                <button type="submit">Login</button>
+                <div class="form-group">
+                <label for="password">Confirm Password:</label>
+                <input type="password" value={form.password} onChange={e => updateForm({password: e.target.value})} placeholder="Password" required/>
+                </div>
+                <button type="submit">Register</button>
             </form>
             </div>
         </div>
