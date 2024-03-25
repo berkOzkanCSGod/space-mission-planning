@@ -98,7 +98,7 @@ function Login() {
                 </div>
                 <div class="form-group">
                 <label for="email">E-Mail:</label>
-                <input type="email" value={form.email} onChange={e => updateForm({email: e.target.value})} placeholder="E-Mail" required/>
+                <input type="text" value={form.email} onChange={e => updateForm({email: e.target.value})} placeholder="E-Mail" required/>
                 </div>
                 <div class="form-group">
                 <label for="nation">Nation:</label>
