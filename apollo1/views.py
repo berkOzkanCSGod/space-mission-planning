@@ -31,29 +31,43 @@ def login(request):
             return Response({'message': 'Logged in!'})
         else:
             return Response({'error_message': 'Invalid username or password.'})
-
+        
+@api_view(['POST'])
 def signup(request):
-    if (request.method == 'POST'):
-        username = request.POST['username']
-        password = request.POST['password']
-        confirm_password = request.POST['confirm_password']
-        if password != confirm_password:
-            error_message = 'Passwords do not match.'
-            return render(request, 'signup.html', {'error_message': error_message})
-        user = Users.createUser(username, password)
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        email = data.get('email')
+        userType = data.get('userType')
+        if Users.checkUserExists(username):
+            print("User already exists.")
+            return Response({'error_message': 'User already exists.'})
+    
+        if userType == 'Admin':
+            user = Users.createUser(username, password)
+        elif userType == 'Company':
+            country = data.get('country')
+            valuation = data.get('valuation')
+            numberOfEmployees = data.get('numberOfEmployees')
+            budget = data.get('budget')
+            user = Users.createUser(username, password)
+        elif userType == 'Astronaut':
+            nationality = data.get('nationality')
+            age = data.get('age')
+            education = data.get('education')
+            height = data.get('height')
+            weight = data.get('weight')
+            vocation = data.get('vocation')
+            securityClearance = data.get('securityClearance')
+            user = Users.createUser(username, password)
+        
         if user != None:
             request.session['user_id'] = user.id
             print("Logged in!")
-            return HttpResponseRedirect(reverse('home'))
+            return Response({'message': 'Logged in!'})
         else:
-            error_message = 'Invalid username or password.'
-            return render(request, 'signup.html', {'error_message': error_message})
-
-    else:
-        if 'login_success' in request.session:
-            del request.session['login_success']
-
-        return render(request, "signup.html")
+            return Response({'error_message': 'Invalid username or password.'})
     
 def logout(request):
     if 'user_id' in request.session:

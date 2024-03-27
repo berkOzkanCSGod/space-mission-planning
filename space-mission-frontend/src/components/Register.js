@@ -11,11 +11,22 @@ function Login() {
   const [form, setForm] = useState({
     username: '', 
     email: '',
-    nation: '',
     password: '',
-    userType: ''
+    userType: '',
+    nationality: '',
+    age: '',
+    education: '',
+    weight: '',
+    height: '',
+    vocation: '',
+    securityClearance: '',
+    country: '',
+    valuation: '',
+    numberOfEmployees: '',
+    budget: ''
   });
   const [message, setMessage] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   function updateForm(value) {
     return setForm((prev) => {
@@ -59,28 +70,43 @@ function Login() {
 
   async function register(e){
     e.preventDefault();
-    await axios.post('http://localhost:8000/signup/', ...form)
-      .then(response => {
-        setMessage(response.data.message);
-        if (message === 'Logged in!') {
-          navigate('/home'); // Redirect to Home page
-        } else {
-          updateForm({ username: '', password: '' });
-          toast.error(response.data.error_message, {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            });
-        }
-      })
-      .catch(error => {
-        console.log(error);
+    if(form.password !== confirmPassword){
+      toast.error("Passwords do not match", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
       });
+      setConfirmPassword('');
+      return;
+    } else {
+      await axios.post('http://localhost:8000/signup/', form)
+        .then(response => {
+          setMessage(response.data.message);
+          if (message === 'Logged in!') {
+            navigate('/home'); // Redirect to Home page
+          } else {
+            updateForm({ username: '', password: '' });
+            toast.error(response.data.error_message, {
+              position: "top-center",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });      
+    }
   };
 
   return (
@@ -99,10 +125,6 @@ function Login() {
                 <div class="form-group">
                 <label for="email">E-Mail:</label>
                 <input type="text" value={form.email} onChange={e => updateForm({email: e.target.value})} placeholder="E-Mail" required/>
-                </div>
-                <div class="form-group">
-                <label for="nation">Nation:</label>
-                <input type="text" value={form.nation} onChange={e => updateForm({nation: e.target.value})} placeholder="Nation" required/>
                 </div>
                 <div class="form-group" style={{display: "flex", alignItems: "center"}}>
                 <label>User Type:</label>
@@ -125,13 +147,65 @@ function Login() {
                     </label>
                 </div>
                 </div>
+                {form.userType === 'Astronaut' && (
+                  <div className='right-column'>
+                  <div class="form-group">
+                  <label for="nationality">Nationality:</label>
+                  <input type="text" value={form.nationality} onChange={e => updateForm({nationality: e.target.value})} placeholder="Nationality" required/>
+                  </div>
+                  <div class="form-group">
+                  <label for="age">Age:</label>
+                  <input type="text" value={form.age} onChange={e => updateForm({age: e.target.value})} placeholder="Age" required/>
+                  </div>
+                  <div class="form-group">
+                  <label for="education">Education:</label>
+                  <input type="text" value={form.education} onChange={e => updateForm({education: e.target.value})} placeholder="Education" required/>
+                  </div>
+                  <div class="form-group">
+                  <label for="weight">Weight:</label>
+                  <input type="text" value={form.weight} onChange={e => updateForm({weight: e.target.value})} placeholder="Weight" required/>
+                  </div>
+                  <div class="form-group">
+                  <label for="height">Height:</label>
+                  <input type="text" value={form.height} onChange={e => updateForm({height: e.target.value})} placeholder="Height" required/>
+                  </div>
+                  <div class="form-group">
+                  <label for="vocation">Vocation:</label>
+                  <input type="text" value={form.vocation} onChange={e => updateForm({vocation: e.target.value})} placeholder="Vocation" required/>
+                  </div>
+                  <div class="form-group">
+                  <label for="securityClearance">Security Clearance:</label>
+                  <input type="text" value={form.securityClearance} onChange={e => updateForm({securityClearance: e.target.value})} placeholder="Security Clearance" required/>
+                  </div>
+                  </div>
+                )}
+                {form.userType === 'Organization' && (
+                  <div className='right-column'>
+                  <div class="form-group">
+                  <label for="country">Country:</label>
+                  <input type="text" value={form.country} onChange={e => updateForm({country: e.target.value})} placeholder="Country" required/>
+                  </div>
+                  <div class="form-group">
+                  <label for="valuation">Valuation:</label>
+                  <input type="text" value={form.valuation} onChange={e => updateForm({valuation: e.target.value})} placeholder="Valuation" required/>
+                  </div>
+                  <div class="form-group">
+                  <label for="numberOfEmployees">Number of Employees:</label>
+                  <input type="text" value={form.numberOfEmployees} onChange={e => updateForm({numberOfEmployees: e.target.value})} placeholder="Number of Employees" required/>
+                  </div>
+                  <div class="form-group">
+                  <label for="budget">Budget:</label>
+                  <input type="text" value={form.budget} onChange={e => updateForm({budget: e.target.value})} placeholder="Budget" required/>
+                  </div>
+                  </div>
+                )}
                 <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" value={form.password} onChange={e => updateForm({password: e.target.value})} placeholder="Password" required/>
                 </div>
                 <div class="form-group">
                 <label for="password">Confirm Password:</label>
-                <input type="password" value={form.password} onChange={e => updateForm({password: e.target.value})} placeholder="Password" required/>
+                <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="Confirm Password" required/>
                 </div>
                 <button type="submit">Register</button>
             </form>

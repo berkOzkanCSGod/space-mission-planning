@@ -19,6 +19,17 @@ class Users(models.Model):
             return users
 
     @classmethod
+    def checkUserExists(cls, username):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM users WHERE username = %s", [username])
+
+            row = cursor.fetchone()
+            if row:
+                return True
+            else:
+                return False
+
+    @classmethod
     def authenticateUser(cls, username, password):
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM users WHERE username = %s", [username])

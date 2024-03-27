@@ -12,7 +12,7 @@
     margin: 0;
     padding: 0;
     height: 100vh;
-    overflow: hidden;
+    overflow: auto;
     background-color: var(--background-color);
     position: relative;
     font-family: 'Oswald', sans-serif;

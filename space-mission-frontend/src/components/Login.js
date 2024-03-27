@@ -55,7 +55,7 @@ function Login() {
 
   async function login(e){
     e.preventDefault();
-    await axios.post('http://localhost:8000/login/', ...form)
+    await axios.post('http://localhost:8000/login/', form)
       .then(response => {
         setMessage(response.data.message);
         if (message === 'Logged in!') {
