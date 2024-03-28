@@ -43,7 +43,7 @@ def signup(request):
         if Users.checkUserExists(username):
             print("User already exists.")
             return Response({'error_message': 'User already exists.'})
-    
+        
         if userType == 'Admin':
             user = Users.createUser(username, password)
         elif userType == 'Company':
@@ -65,7 +65,7 @@ def signup(request):
         if user != None:
             request.session['user_id'] = user.id
             print("Logged in!")
-            return Response({'message': 'Logged in!'})
+            return Response({'message': 'Register successful!'})
         else:
             return Response({'error_message': 'Invalid username or password.'})
     

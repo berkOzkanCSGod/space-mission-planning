@@ -87,7 +87,7 @@ function Login() {
       await axios.post('http://localhost:8000/signup/', form)
         .then(response => {
           setMessage(response.data.message);
-          if (message === 'Logged in!') {
+          if (message === 'Register successful!') {
             navigate('/home'); // Redirect to Home page
           } else {
             updateForm({ username: '', password: '' });
