@@ -1,15 +1,25 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
+
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+
+
 </head>
 <body>
+    <div class="navbar">
+        <a href="dashboard">Dashboard</a>
+        <a href="profile">Profile</a>
+    </div>
     <h1>All users</h1>
     <ul>
-        {% for item in users %}
+        {% comment %} {% for item in users %}
             <li>{{ item.username }} - {{ item.password }}</li>
-        {% endfor %}
+        {% endfor %} {% endcomment %}
     </ul>
     <div class="logout">
         <a href="{% url 'logout' %}">Logout</a>

@@ -1,0 +1,128 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}"> 
+</head>
+<body>
+    <div class="navbar">
+        <a href="dashboard">Dashboard</a>
+        <a href="profile">Profile</a>
+    </div>
+
+    {% if error_message %}
+        <p style="color: red;">{{ error_message }}</p>
+    {% endif %}
+
+    <div class="profile-info">
+        <h1>{{ profile.uname }}</h1>
+        <p>User ID: {{ profile.uid }}</p>
+        
+        <div class="form-container">
+            <form action="{% url 'update_field' %}" id="uemail-form" method="post">
+                {% csrf_token %}
+                <div class="form-row">
+                    <label>Email:</label>
+                    <span class="text">{{ profile.uemail }}</span>
+                    <button type="button" id="update-uemail" onclick="updateField('uemail')">Update</button>
+                </div>
+                <input type="hidden" id="uemail-input" name="input_value">
+                <input type="hidden" name="field" value="uemail">
+            </form>
+
+            {% if profile.role == "organization" %}
+            <div class="form-row">
+                <label>Organization ID:</label>
+                <span class="text">{{ profile.oid }}</span>
+            </div>
+            <div class="form-row">
+                <label>Budget:</label>
+                <span class="text">{{ profile.obudget }}</span>
+            </div>
+            <form action="{% url 'update_field' %}" id="size-form" method="post">
+                {% csrf_token %}
+                <div class="form-row">
+                    <label>Size:</label>
+                    <span class="text">{{ profile.osize }}</span>
+                    <button type="button" id="update-size" onclick="updateField('size')">Update</button>
+                </div>
+                <input type="hidden" id="size-input" name="input_value">
+                <input type="hidden" name="field" value="size">
+            </form>
+            <div class="form-row">
+                <label>Value:</label>
+                <span class="text">{{ profile.ovalue }}</span>
+            </div>
+            <div class="form-row">
+                <label>Creation Date:</label>
+                <span class="text">{{ profile.ucreation_date }}</span>
+            </div>
+            {% elif profile.role == "astronaut" %}
+            <div class="form-row">
+                <label>Astronaut ID:</label>
+                <span class="text">{{ profile.aid }}</span>
+            </div>
+            <form action="{% url 'update_field' %}" id="age-form" method="post">
+                {% csrf_token %}
+                <div class="form-row">
+                    <label>Age:</label>
+                    <span class="text">{{ profile.age }}</span>
+                    <button type="button" id="update-age" onclick="updateField('age')">Update</button>
+                </div>
+                <input type="hidden" id="age-input" name="input_value">
+                <input type="hidden" name="field" value="age">
+            </form>
+            <form action="{% url 'update_field' %}" id="height-form" method="post">
+                {% csrf_token %}
+                <div class="form-row">
+                    <label>Height:</label>
+                    <span class="text">{{ profile.height }}</span>
+                    <button type="button" id="update-height" onclick="updateField('height')">Update</button>
+                </div>
+                <input type="hidden" id="height-input" name="input_value">
+                <input type="hidden" name="field" value="height">
+            </form>
+            <form action="{% url 'update_field' %}" id="weight-form" method="post">
+                {% csrf_token %}
+                <div class="form-row">
+                    <label>Weight:</label>
+                    <span class="text">{{ profile.weight }}</span>
+                    <button type="button" id="update-weight" onclick="updateField('weight')">Update</button>
+                </div>
+                <input type="hidden" id="weight-input" name="input_value">
+                <input type="hidden" name="field" value="weight">
+            </form>
+            <form action="{% url 'update_field' %}" id="nationality-form" method="post">
+                {% csrf_token %}
+                <div class="form-row">
+                    <label>Nationality:</label>
+                    <span class="text">{{ profile.nationality }}</span>
+                    <button type="button" id="update-nationality" onclick="updateField('nationality')">Update</button>
+                </div>
+                <input type="hidden" id="nationality-input" name="input_value">
+                <input type="hidden" name="field" value="nationality">
+            </form>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <div class="logout">
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+    <script>
+        function updateField(fieldName) {
+            var inputValue = prompt("Enter new value for " + fieldName);
+            if (inputValue !== null) {
+                document.getElementById(fieldName + "-input").value = inputValue;
+                document.getElementById(fieldName + "-form").submit();
+            }
+        }
+    </script>
+</body>
+</html>

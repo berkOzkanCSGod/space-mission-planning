@@ -17,8 +17,11 @@ def login(request):
         username = request.POST['username']
         password = request.POST['password']
         user = Users.authenticateUser(username, password)
-        if user != None:
-                request.session['user_id'] = user.id
+
+        if user is not None:
+                request.session['user_id'] = user.uid
+                request.session['user_role'] = Users.findUserRole(user.uid)
+
                 print("Logged in!")
                 return HttpResponseRedirect(reverse('home'))
         else:
@@ -36,12 +39,18 @@ def signup(request):
         username = request.POST['username']
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
+        email = request.POST['email']
+        role = request.POST['role']
+
         if password != confirm_password:
             error_message = 'Passwords do not match.'
             return render(request, 'signup.html', {'error_message': error_message})
-        user = Users.createUser(username, password)
+        
+        user = Users.createUser(username, email, password, role)
+
         if user != None:
-            request.session['user_id'] = user.id
+            request.session['user_id'] = user.uid
+            request.session['user_role'] = role
             print("Logged in!")
             return HttpResponseRedirect(reverse('home'))
         else:
@@ -62,9 +71,34 @@ def logout(request):
 def home(request):
     user_id = request.session.get('user_id')
     if user_id:
-        user = Users.objects.get(id=user_id)
-        users = Users.getAllUsers()
-        return render(request, "home.html", {'users': users})
+        return render(request, "home.html", {'users': user_id})
     else:
         error_message = 'You need to log in to access this page.'
         return HttpResponseRedirect(reverse('login'))
+
+def profile(request):
+    user_id = request.session.get('user_id')
+    user_role = request.session.get('user_role')
+
+    if user_id:
+        user = Users.getUserById(user_id, user_role)
+        if user:
+            return render(request, "profile.html", {'profile': user})
+
+    return None
+
+def update_field(request):
+    if request.method == "POST":
+        field_name = request.POST.get("field")
+        input_value = request.POST.get("input_value") 
+        user_id = request.session.get('user_id')
+        user_role = request.session.get('user_role')
+        
+        update = Users.updateAttribute(user_id, user_role, field_name, input_value)
+
+        if update is None:
+            return HttpResponseRedirect(reverse('profile'))
+        else:
+            return render(request, 'profile.html', {'error_message': update})
+    else:
+        return HttpResponse("Invalid request method.")

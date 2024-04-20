@@ -27,6 +27,9 @@
         </div>
         <button type="submit">Login</button>
       </form>
+      {% if error_message %}
+        <p style="color: red;">{{ error_message }}</p>
+      {% endif %}
     </div>
   </div>
 
