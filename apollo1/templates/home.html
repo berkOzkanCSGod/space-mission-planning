@@ -24,5 +24,8 @@
     <div class="logout">
         <a href="{% url 'logout' %}">Logout</a>
     </div>
+    {% if err_msg %}
+        <p style="color: red;">{{ err_msg }}</p>
+    {% endif %}
 </body>
 </html>

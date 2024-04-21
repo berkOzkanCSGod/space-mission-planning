@@ -18,21 +18,53 @@
         <p style="color: red;">{{ error_message }}</p>
     {% endif %}
 
+    {%if role == "astronaut"%}
+        <h1>{{profile.astro_email}}</h1>
+        <form action="{% url 'update_field' %}" id="astro_name-form" method="post">
+            {% csrf_token %}
+            <div class="form-row">
+                <label>Name:</label>
+                <span class="text">{{ profile.astro_name }}</span>
+                <button type="button" id="update-astro_name" onclick="updateField('astro_name')">Update</button>
+            </div>
+            <input type="hidden" id="astro_name-input" name="input_value">
+            <input type="hidden" name="field" value="astro_name">
+        </form>
+    {% elif role == "company" %}
+        <h1>{{profile.c_email}}</h1>
+        
+    {% endif %}
+    
+    {% comment %} 
+    astro_id=res[0], 
+    astro_email=res[1],
+    astro_password=res[2], 
+    astro_creation_date=res[3],
+    astro_name=res[4],
+    astro_age=res[5],
+    astro_height=res[6],
+    astro_weight=res[7],
+    astro_experience=res[8],
+    astro_nationality=res[9] 
+    {% endcomment %}
+{% comment %} 
+    <form action="{% url 'update_field' %}" id="uemail-form" method="post">
+        {% csrf_token %}
+        <div class="form-row">
+            <label>Email:</label>
+            <span class="text">{{ profile.uemail }}</span>
+            <button type="button" id="update-uemail" onclick="updateField('uemail')">Update</button>
+        </div>
+        <input type="hidden" id="uemail-input" name="input_value">
+        <input type="hidden" name="field" value="uemail">
+    </form>
+
     <div class="profile-info">
         <h1>{{ profile.uname }}</h1>
         <p>User ID: {{ profile.uid }}</p>
         
         <div class="form-container">
-            <form action="{% url 'update_field' %}" id="uemail-form" method="post">
-                {% csrf_token %}
-                <div class="form-row">
-                    <label>Email:</label>
-                    <span class="text">{{ profile.uemail }}</span>
-                    <button type="button" id="update-uemail" onclick="updateField('uemail')">Update</button>
-                </div>
-                <input type="hidden" id="uemail-input" name="input_value">
-                <input type="hidden" name="field" value="uemail">
-            </form>
+         
 
             {% if profile.role == "organization" %}
             <div class="form-row">
@@ -109,7 +141,7 @@
             {% endif %}
         </div>
 
-    </div>
+    </div> {% endcomment %}
 
     <div class="logout">
         <a href="{% url 'logout' %}">Logout</a>
