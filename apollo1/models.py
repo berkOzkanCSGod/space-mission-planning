@@ -116,6 +116,7 @@ class Astronaut(models.Model):
 
         return False
 
+
 class Company(models.Model):
     c_id = models.AutoField(primary_key=True)
     c_email = models.CharField(max_length=50, unique=True)
@@ -212,6 +213,16 @@ class Company(models.Model):
                 return True
 
         return False
+    
+    def getCreatedMissions(id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM creates_mission CM JOIN Space_Mission SM ON CM.sm_id = SM.sm_id AND CM.c_id = %s", [id])
+            return sql.fetchall()
+
+    def getPerformingMissions(id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM performing_missions PM JOIN Space_Mission SM ON PM.sm_id = SM.sm_id AND PM.c_id = %s", [id])
+            return sql.fetchall()
 
 class Launch_Site(models.Model):
     ls_id = models.AutoField(primary_key=True)

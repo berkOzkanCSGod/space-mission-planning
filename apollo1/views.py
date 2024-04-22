@@ -219,8 +219,28 @@ def place_bid(request):
     if (request.method == 'POST'):
         amount = request.POST.get('bid_amount')
         sm_id = request.POST.get('mission_id')
-        print("dddddddddddddddddddddddddddddd:",sm_id)
         res = Space_Mission.placeBid(sm_id, user_id, amount)
         return HttpResponseRedirect(reverse('home'))
     else:
         return render(request, "place_bid.html", {'mission': Space_Mission.getMissionByName(mission_name)})
+    
+def user_missions(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role') 
+    if 'user_id' not in request.COOKIES:
+        return HttpResponseRedirect(reverse('login'))
+    
+    if user_role == 'company':
+        created_missions = Company.getCreatedMissions(user_id)
+        performing_missions = Company.getPerformingMissions(user_id)
+    elif user_role == 'astronaut':
+        # performing_missions = Astronaut.getPerformingMissions(user_id)
+        pass
+
+
+
+    if (request.method == 'POST'):
+        return HttpResponseRedirect(reverse('home'))
+    else:
+        return render(request, "user_missions.html", {'created_missions': created_missions, 'performing_missions':performing_missions})
+    

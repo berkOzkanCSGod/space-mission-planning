@@ -10,6 +10,7 @@ urlpatterns = [
     path("home/dashboard", views.dashboard, name='dashboard'),
     path("home/create_mission", views.create_mission, name='create_mission'),
     path("home/space_missions", views.space_missions, name='space_missions'),
+    path("home/user_missions", views.user_missions, name='user_missions'),
     path("home/place_bid", views.place_bid, name='place_bid'),
     path("login/", views.login, name='login'),
     path("signup/", views.signup, name='signup'),
