@@ -1,0 +1,45 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Space Missions</title>
+
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+
+
+</head>
+<body>
+    <div class="navbar">
+        <a href="dashboard">Dashboard</a>
+        <a href="profile">Profile</a>
+    </div>
+
+    <h1>Place Bid</h1>
+        <span>name,</span>
+        <span>duration,</span>
+        <span>destination,</span>
+        <span>astroCnt,</span>
+        <span>Company,</span>
+        <span>Country</span><br>
+    
+        <span>{{mission}}
+        <br>
+    
+    <form action="{% url 'place_bid' %}" method="post">
+        {% csrf_token %}
+        <label for="bid_amount">Bid: </label>
+        <input type="hidden" name="mission_id" value="{{mission.0}}">
+        <input type="number" step="0.01" name="bid_amount">
+        <button type="submit">Bid</button>
+    </form>
+
+    <div class="logout">
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+    {% if err_msg %}
+        <p style="color: red;">{{ err_msg }}</p>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,65 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Space Missions</title>
+
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+
+
+</head>
+<body>
+    <div class="navbar">
+        <a href="dashboard">Dashboard</a>
+        <a href="profile">Profile</a>
+    </div>
+
+    <h1>Space Missions</h1>
+    <form action="{% url 'space_missions' %}" method="post">
+        {%csrf_token%}
+        <div  class="form-group" >
+            <label>Filter By:</label>
+            <label for="filter">Currently Bidding</label>
+            <input type="radio" id="bidding" name="filter" value="bidding" required>
+            <label for="filter">In Progress</label>
+            <input type="radio" id="in progress" name="filter" value="in progress" required>
+            <label for="filter">Completed</label>
+            <input type="radio" id="completed" name="filter" value="completed" required>
+            <button type="submit">Filter</button>
+        </div>
+
+    </form>
+        <span>name,</span>
+        <span>duration,</span>
+        <span>destination,</span>
+        <span>astroCnt,</span>
+        <span>Company,</span>
+        <span>Country</span><br>
+    {% for mission in missions %}
+        <span>{{mission.0}},</span>
+        <span>{{mission.1}},</span>
+        <span>{{mission.2}},</span>
+        <span>{{mission.3}},</span>
+        <span>{{mission.4}},</span>
+        <span>{{mission.5}},</span>
+        {%if filter == 'bidding'%}
+        <form action="{% url 'place_bid' %}" method="get">
+            {% csrf_token %}
+            <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.0 }}" />
+            <button type="submit">Bid</button>
+        </form>
+        
+        {%endif%}
+        <br>
+    {% endfor %}
+    
+    <div class="logout">
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+    {% if err_msg %}
+        <p style="color: red;">{{ err_msg }}</p>
+    {% endif %}
+</body>
+</html>

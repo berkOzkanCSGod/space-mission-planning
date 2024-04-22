@@ -237,6 +237,7 @@ class Space_Mission(models.Model):
     sm_astro_cnt = models.IntegerField(default=1)
     sm_objective = models.TextField()
 
+    
     def createMission(c_id, name, dest, duration, astroCnt, objective, launchSite, launchTime):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM launch_site WHERE ls_location=%s",[launchSite])
@@ -266,3 +267,56 @@ class Space_Mission(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM launch_site")
             return sql.fetchall()
+        
+    def getAllMissions():
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM allmissions")
+            return sql.fetchall()
+        
+    def filter(filter):
+        with connection.cursor() as sql:
+            if filter == 'bidding':
+                sql.execute('''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
+                            JOIN creates_mission CM ON SM.sm_id = CM.sm_id 
+                            JOIN company C ON CM.c_id = C.c_id
+                            WHERE CM.status = 'Bidding'
+                            ''')
+                return sql.fetchall()
+            elif filter == 'in progress':
+                sql.execute('''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
+                            JOIN creates_mission CM ON SM.sm_id = CM.sm_id 
+                            JOIN company C ON CM.c_id = C.c_id
+                            WHERE CM.status = 'In Progress'
+                            ''')
+                return sql.fetchall()
+            elif filter == 'completed':
+                sql.execute('''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
+                            JOIN creates_mission CM ON SM.sm_id = CM.sm_id 
+                            JOIN company C ON CM.c_id = C.c_id
+                            WHERE CM.status = 'Completed'
+                            ''')
+                return sql.fetchall()
+            else:
+                return Space_Mission.getAllMissions()
+            
+    def getMissionByName(name):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM space_mission WHERE sm_name=%s", [name])
+            return sql.fetchone()
+
+    def findIdByName(name):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM space_mission WHERE sm_name=%s", [name])
+            row = sql.fetchone()
+            if row:
+                return row[0]
+            else:
+                return None
+
+
+    def placeBid(sm_id, c_id, amount):
+        with connection.cursor() as sql:
+            # do checks for balance etc., etc.,
+
+            sql.execute("INSERT INTO bids (sm_id, c_id, amount) VALUES (%s, %s, %s)", [sm_id, c_id, amount])
+            return None

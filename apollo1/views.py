@@ -187,3 +187,40 @@ def create_mission(request):
     else:
         ls = Space_Mission.getLaunchSites()
         return render(request, "create_mission.html", {'launch_sites': ls})
+    
+
+def space_missions(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role') 
+    if 'user_id' not in request.COOKIES:
+        return HttpResponseRedirect(reverse('login'))
+    
+    if (request.method == 'POST'):
+        filter = request.POST.get('filter')
+        missions = Space_Mission.filter(filter)
+
+        return render(request, "space_missions.html", {'missions': missions, 'filter': filter})
+
+    else:
+        return render(request, "space_missions.html", {'missions': Space_Mission.getAllMissions()})
+    
+def place_bid(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role') 
+    if 'user_id' not in request.COOKIES:
+        return HttpResponseRedirect(reverse('login'))
+    elif user_role == 'astronaut':
+        return HttpResponseRedirect(reverse('home'))
+    
+    #additional checks
+
+    mission_name = request.GET.get('mission_name')
+
+    if (request.method == 'POST'):
+        amount = request.POST.get('bid_amount')
+        sm_id = request.POST.get('mission_id')
+        print("dddddddddddddddddddddddddddddd:",sm_id)
+        res = Space_Mission.placeBid(sm_id, user_id, amount)
+        return HttpResponseRedirect(reverse('home'))
+    else:
+        return render(request, "place_bid.html", {'mission': Space_Mission.getMissionByName(mission_name)})
