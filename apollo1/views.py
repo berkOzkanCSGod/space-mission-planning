@@ -112,7 +112,9 @@ def home(request):
 def profile(request):
     user_id = request.COOKIES.get('user_id')
     user_role = request.COOKIES.get('user_role')
-
+    if 'user_id' not in request.COOKIES:
+        response = HttpResponseRedirect(reverse('login'))
+        return response
     if user_role == 'astronaut':
         user = Astronaut.getUserById(user_id)
         if user:
@@ -125,33 +127,34 @@ def profile(request):
     error_message = 'Issue with accessing profile'
     return HttpResponseRedirect(reverse('home')) 
 
+def update_field(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role')
+    if 'user_id' not in request.COOKIES:
+        response = HttpResponseRedirect(reverse('login'))
+        return response
+    field = request.GET.get('field')
+    input = request.POST.get('input')
 
-def update_field():
-    pass
+    print("Field:", field)
+    print("input:", input)
+    print("role:", user_role)
 
-# def profile(request):
-#     user_id = request.session.get('user_id')
-#     user_role = request.session.get('user_role')
+    if user_role == 'astronaut':
+        Astronaut.updateAttribute(user_id, field, input)
+        return HttpResponseRedirect(reverse('profile')) 
+    elif user_role == 'company':
+        Company.updateAttribute(user_id, field, input)
+        return HttpResponseRedirect(reverse('profile')) 
 
-#     if user_id:
-#         user = Users.getUserById(user_id, user_role)
-#         if user:
-#             return render(request, "profile.html", {'profile': user})
-
-#     return None
-
-# def update_field(request):
-#     if request.method == "POST":
-#         field_name = request.POST.get("field")
-#         input_value = request.POST.get("input_value") 
-#         user_id = request.session.get('user_id')
-#         user_role = request.session.get('user_role')
-        
-#         update = Users.updateAttribute(user_id, user_role, field_name, input_value)
-
-#         if update is None:
-#             return HttpResponseRedirect(reverse('profile'))
-#         else:
-#             return render(request, 'profile.html', {'error_message': update})
-#     else:
-#         return HttpResponse("Invalid request method.")
+def dashboard(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role') 
+    if 'user_id' not in request.COOKIES:
+        response = HttpResponseRedirect(reverse('login'))
+        return response
+    
+    if (request.method == 'POST'):
+        pass
+    else:
+        return render(request, "dashboard.html")
