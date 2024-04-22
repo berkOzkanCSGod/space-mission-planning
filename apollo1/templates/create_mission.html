@@ -1,0 +1,67 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Mission</title>
+
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+
+
+</head>
+<body>
+    <div class="navbar">
+        <a href="dashboard">Dashboard</a>
+        <a href="profile">Profile</a>
+    </div>
+    <h1>Create Space Mission</h1>
+
+    <form action= "{% url 'create_mission'%}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="sm_name-input">Name</label>
+            <input type="text" id="sm_name-input" name="sm_name-input">
+        </div>
+        <div class="form-group">
+            <label for="sm_destination-input">Destination</label>
+            <input type="text" id="sm_destination-input" name="sm_destination-input">
+        </div>
+        <div class="form-group">
+            <label for="sm_duration-input">Duration (days)</label>
+            <input type="number" id="sm_duration-input" name="sm_duration-input">
+        </div>
+        <div class="form-group">
+            <label for="sm_astro_cnt-input">Astronaut Count</label>
+            <input type="number" id="sm_astro_cnt-input" name="sm_astro_cnt-input">
+        </div>
+        <div class="form-group">
+            <label for="sm_objective-input">Objective</label>
+            <input type="text" id="sm_objective-input" name="sm_objective-input">
+        </div>
+        <div class="form-group">
+            <label for="sites">Launch Sites</label>
+            <select id="dropdown" name="sites">
+                {% for item in launch_sites %}
+                    <option value="{{ item.1 }}">{{ item.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="date-input">Date</label>
+            <input type="date" id="date-input" name="date-input">
+        </div>
+        <button type="submit">Create</button>
+    </form>
+
+    {% if err_msg %}
+    <p style="color: red;">{{ err_msg }}</p>
+    {% endif %}
+
+
+    <div class="logout">
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+</body>
+</html>

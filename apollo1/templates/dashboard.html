@@ -16,11 +16,8 @@
         <a href="profile">Profile</a>
     </div>
     <h1>Dash</h1>
-    <ul>
-        {% comment %} {% for item in users %}
-            <li>{{ item.username }} - {{ item.password }}</li>
-        {% endfor %} {% endcomment %}
-    </ul>
+    <a href="create_mission">Create Space Mission</a>
+
     <div class="logout">
         <a href="{% url 'logout' %}">Logout</a>
     </div>

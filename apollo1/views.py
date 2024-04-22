@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Astronaut, Company
+from .models import Astronaut, Company, Space_Mission
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -151,10 +151,39 @@ def dashboard(request):
     user_id = request.COOKIES.get('user_id')
     user_role = request.COOKIES.get('user_role') 
     if 'user_id' not in request.COOKIES:
-        response = HttpResponseRedirect(reverse('login'))
-        return response
+        return HttpResponseRedirect(reverse('login'))
     
     if (request.method == 'POST'):
         pass
     else:
         return render(request, "dashboard.html")
+    
+def create_mission(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role') 
+    if 'user_id' not in request.COOKIES:
+        return HttpResponseRedirect(reverse('login'))
+    elif user_role == 'astronaut':
+        return HttpResponseRedirect(reverse('home'))
+
+    if (request.method == 'POST'):
+        name = request.POST.get('sm_name-input')
+        destination = request.POST.get('sm_destination-input')
+        duration = request.POST.get('sm_duration-input')
+        astronaut_count = request.POST.get('sm_astro_cnt-input')
+        objective = request.POST.get('sm_objective-input')
+        launch_site = request.POST.get('sites')
+        launch_date = request.POST.get('date-input')
+        ls = Space_Mission.getLaunchSites()
+
+        res = Space_Mission.createMission(user_id, name, destination, duration, astronaut_count, objective, launch_site, launch_date)
+
+        if res is not None:
+            return HttpResponseRedirect(reverse('home'))
+        else:
+            return render(request, "create_mission.html", {'err_msg': 'Could not create mission', 'launch_sites': ls})
+
+
+    else:
+        ls = Space_Mission.getLaunchSites()
+        return render(request, "create_mission.html", {'launch_sites': ls})

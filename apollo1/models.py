@@ -212,3 +212,57 @@ class Company(models.Model):
                 return True
 
         return False
+
+class Launch_Site(models.Model):
+    ls_id = models.AutoField(primary_key=True)
+    ls_launch_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    ls_location = models.CharField(max_length=50)
+
+    @classmethod 
+    def isAvailable(cls, id, time):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM uses WHERE launch_time=%s AND ls_id=%s",[time,id])
+            res = sql.fetchone()
+            if res is not None:
+                return False
+            
+        return True
+
+
+class Space_Mission(models.Model):
+    sm_id = models.AutoField(primary_key=True)
+    sm_name = models.CharField(max_length=50)
+    sm_duration = models.DecimalField(max_digits=10, decimal_places=2)
+    sm_destination = models.CharField(max_length=50)
+    sm_astro_cnt = models.IntegerField(default=1)
+    sm_objective = models.TextField()
+
+    def createMission(c_id, name, dest, duration, astroCnt, objective, launchSite, launchTime):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM launch_site WHERE ls_location=%s",[launchSite])
+            res = sql.fetchone()
+            ls = Launch_Site(
+                ls_id=res[0],
+                ls_location=res[1],
+                ls_launch_cost=res[2]
+            )
+
+            # check if launch site is available on that time
+            if ls.isAvailable(ls.ls_id, launchTime) is False:
+                return None
+
+            sql.execute("INSERT INTO space_mission (sm_name, sm_duration, sm_destination, sm_astro_cnt, sm_objective) VALUES (%s, %s, %s, %s, %s)", [name, duration, dest, astroCnt, objective])
+            sql.execute("SELECT * FROM space_mission WHERE sm_name=%s",[name])
+            res = sql.fetchone()
+
+            mission_id = res[0]
+
+            sql.execute("INSERT INTO uses (ls_id, sm_id, launch_time) VALUES (%s, %s, %s)", [ls.ls_id, mission_id, launchTime])
+            sql.execute("INSERT INTO creates_mission (c_id, sm_id) VALUES (%s, %s)", [c_id, mission_id])
+
+            return True
+
+    def getLaunchSites():
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM launch_site")
+            return sql.fetchall()
