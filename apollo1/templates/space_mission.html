@@ -1,0 +1,142 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Space Mission</title>
+
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+
+
+</head>
+<body>
+    <div class="navbar">
+        <a href="dashboard">Dashboard</a>
+        <a href="profile">Profile</a>
+    </div>
+
+    <h1>Space Mission</h1>
+    
+
+    <table>
+        <tr>
+            <th>Mission ID</th>
+            <th>Mission Name</th>
+            <th>Mission Duration (Days)</th>
+            <th>Destination</th>
+            <th>Astronaut Amount</th>
+            <th>Objective</th>
+            <th>Status</th>
+        </tr>
+        <tr>
+            <td>{{mission.0}}</td>
+            <td>{{mission.1}}</td>
+            <td>{{mission.2}}</td>
+            <td>{{mission.3}}</td>
+            <td>{{mission.4}}</td>
+            <td>{{mission.5}}</td>
+            {%if performs_mission%}
+            {%if performs_mission.2 == 'Incomplete' and is_owner%}
+            <td>   
+                <form action="{% url 'space_mission' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="mission_name" value="{{ mission.1 }}">
+                    <select name="status" onchange="this.form.submit()">
+                        <option value="Incomplete" selected>Incomplete</option>
+                        <option value="Success">Success</option>
+                        <option value="Failure">Failure</option>
+                    </select>
+                </form>
+            </td>
+            {%else%}
+            <td>{{performs_mission.2}}</td>
+            {%endif%}
+            {%else%}
+            <td>In bidding</td>
+            {%endif%}
+            
+        </tr>
+    </table>
+
+    <h1>Creator Company</h1>
+    <table>
+        <tr>
+            <th>Company ID</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Employee Amount</th>
+            <th>Country</th>
+        </tr>
+        <tr>
+            <td>{{creator.c_id}}</td>
+            <td>{{creator.c_email}}</td>
+            <td>{{creator.c_name}}</td>
+            <td>{{creator.c_emply_cnt}}</td>
+            <td>{{creator.c_country_origin}}</td>
+        </tr>
+    </table>
+
+    {%if performs_mission%}
+    <h1>Mission Performing Company</h1>
+    <table>
+        <tr>
+            <th>Company ID</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Employee Amount</th>
+            <th>Country</th>
+        </tr>
+        <tr>
+            <td>{{performer.c_id}}</td>
+            <td>{{performer.c_email}}</td>
+            <td>{{performer.c_name}}</td>
+            <td>{{performer.c_emply_cnt}}</td>
+            <td>{{performer.c_country_origin}}</td>
+        </tr>
+    </table>
+    {%endif%}
+    <h1>
+        Bids
+    </h1>
+    {%if bids%}
+    <table>
+        <tr>
+            <th>Company Name</th>
+            <th>Amount (USD)</th>
+            {%if is_owner and not performs_mission%}
+            <th>Accept</th>
+            {%endif%}
+        </tr>
+        {%for bid in bids%}
+        <tr>
+            <td>{{bid.3}}</td>
+            <td>{{bid.2}}</td>
+            {%if is_owner and not performs_mission%}
+            <td>
+                <form action="{% url 'space_mission' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.1 }}" />
+                    <input type="hidden" id="company_id" name="company_id" value="{{ bid.1 }}" />
+                    <button type="submit">Accept</button>
+                </form>
+            </td>
+            {%endif%}
+        </tr>
+        {%endfor%}
+
+    </table>
+
+    {%else%}
+    <p>There are no bids yet.</p>
+    {%endif%}
+
+    <div class="logout">
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+    {% if err_msg %}
+        <p style="color: red;">{{ err_msg }}</p>
+    {% endif %}
+</body>
+</html>

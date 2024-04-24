@@ -314,6 +314,11 @@ class Space_Mission(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM space_mission WHERE sm_name=%s", [name])
             return sql.fetchone()
+    
+    def getMissionById(sm_id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM space_mission WHERE sm_id=%s", [sm_id])
+            return sql.fetchone()
 
     def findIdByName(name):
         with connection.cursor() as sql:
@@ -323,11 +328,33 @@ class Space_Mission(models.Model):
                 return row[0]
             else:
                 return None
+    def findCreatorId(sm_id):
+        with connection.cursor() as sql:
+            sql.execute('''
+                            SELECT c_id 
+                            FROM creates_mission
+                            WHERE sm_id=%s       
+                        ''', [sm_id])
+            return sql.fetchone()[0]
 
-
+    def findBids(sm_id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM bids WHERE sm_id=%s", [sm_id])
+            return sql.fetchall()
+    def findPerformingMission(sm_id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM performing_missions WHERE sm_id=%s", [sm_id])
+            return sql.fetchone()
+        
     def placeBid(sm_id, c_id, amount):
         with connection.cursor() as sql:
             # do checks for balance etc., etc.,
 
             sql.execute("INSERT INTO bids (sm_id, c_id, amount) VALUES (%s, %s, %s)", [sm_id, c_id, amount])
             return None
+    def acceptBid(sm_id, c_id):
+        with connection.cursor() as sql:
+            sql.execute("INSERT INTO performing_missions (c_id, sm_id) VALUES (%s,%s)", [c_id, sm_id])
+    def updateStatus(sm_id, status):
+        with connection.cursor() as sql:
+            sql.execute("UPDATE performing_missions SET status = %s WHERE sm_id = %s", [status,sm_id])

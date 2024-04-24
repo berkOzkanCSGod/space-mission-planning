@@ -7,7 +7,7 @@
     <title>Space Missions</title>
 
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
 
 </head>
 <body>
@@ -21,39 +21,66 @@
         {%csrf_token%}
         <div  class="form-group" >
             <label>Filter By:</label>
-            <label for="filter">Currently Bidding</label>
-            <input type="radio" id="bidding" name="filter" value="bidding" required>
-            <label for="filter">In Progress</label>
-            <input type="radio" id="in progress" name="filter" value="in progress" required>
-            <label for="filter">Completed</label>
-            <input type="radio" id="completed" name="filter" value="completed" required>
+            <div>
+                <label for="filter">Currently Bidding</label>
+                <input type="radio" id="bidding" name="filter" value="bidding" required>
+            </div>
+            <div>
+                <label for="filter">In Progress</label>
+                <input type="radio" id="in progress" name="filter" value="in progress" required>
+            </div>
+            <div>
+                <label for="filter">Completed</label>
+                <input type="radio" id="completed" name="filter" value="completed" required>
+            </div>
+            
             <button type="submit">Filter</button>
         </div>
 
     </form>
-        <span>name,</span>
-        <span>duration,</span>
-        <span>destination,</span>
-        <span>astroCnt,</span>
-        <span>Company,</span>
-        <span>Country</span><br>
+    <table>
+        <tr>
+            <th>name</th>
+            <th>duration</th>
+            <th>destination</th>
+            <th>astroCnt</th>
+            <th>Company</th>
+            <th>Country</th>
+            {%if filter == 'bidding'%}
+            <th>Bid</th>
+            {%endif%}
+            <th>View</th>
+
+        </tr>
     {% for mission in missions %}
-        <span>{{mission.0}},</span>
-        <span>{{mission.1}},</span>
-        <span>{{mission.2}},</span>
-        <span>{{mission.3}},</span>
-        <span>{{mission.4}},</span>
-        <span>{{mission.5}},</span>
-        {%if filter == 'bidding'%}
-        <form action="{% url 'place_bid' %}" method="get">
-            {% csrf_token %}
-            <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.0 }}" />
-            <button type="submit">Bid</button>
-        </form>
-        
-        {%endif%}
-        <br>
+        <tr>
+            <td>{{mission.0}}</td>
+            <td>{{mission.1}}</td>
+            <td>{{mission.2}}</td>
+            <td>{{mission.3}}</td>
+            <td>{{mission.4}}</td>
+            <td>{{mission.5}}</td>
+            {%if filter == 'bidding'%}
+            <td>
+                <form action="{% url 'place_bid' %}" method="get">
+                    {% csrf_token %}
+                    <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.0 }}" />
+                    <button type="submit">Bid</button>
+                </form>
+                
+            </td>
+            {%endif%}
+            <td>
+                <form action="{% url 'space_mission' %}" method="get">
+                    {% csrf_token %}
+                    <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.0 }}" />
+                    <button type="submit">View</button>
+                </form>
+            </td>
+            
+        </tr>
     {% endfor %}
+    </table>
     
     <div class="logout">
         <a href="{% url 'logout' %}">Logout</a>
