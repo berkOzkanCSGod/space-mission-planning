@@ -203,6 +203,56 @@ def space_missions(request):
 
     else:
         return render(request, "space_missions.html", {'missions': Space_Mission.getAllMissions()})
+
+def space_mission(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role') 
+    if 'user_id' not in request.COOKIES:
+        return HttpResponseRedirect(reverse('login'))
+    mission_name = None
+    if (request.method == 'GET'):
+        mission_name = request.GET.get('mission_name')
+    elif(request.method == 'POST'):
+        mission_name = request.POST.get('mission_name')
+        c_id = request.POST.get('company_id')
+        mission = Space_Mission.getMissionByName(mission_name)
+        sm_id = Space_Mission.findIdByName(mission_name)
+        print('cid:',c_id)
+        if(c_id):
+            Space_Mission.acceptBid(sm_id, c_id)
+        status = request.POST.get('status')
+        if(status):
+            Space_Mission.updateStatus(sm_id,status)
+
+
+    mission = Space_Mission.getMissionByName(mission_name)
+    sm_id = Space_Mission.findIdByName(mission_name)
+    bids = list(Space_Mission.findBids(sm_id))
+    for i in range(0,len(bids)):
+        bids[i] = list(bids[i])
+        bids[i].append(Company.getUserById(bids[i][1]).c_name)
+        print(bids[i])
+    print(bids)
+    performs_mission = Space_Mission.findPerformingMission(sm_id)
+    print('performs', performs_mission)
+    performer = None
+    if(performs_mission):
+        performer = Company.getUserById(performs_mission[0])
+    print('performer', performer)
+    creator_id = Space_Mission.findCreatorId(sm_id)
+    creator = Company.getUserById(creator_id)
+    is_owner = int(creator_id) == int(user_id)
+    if(performs_mission):
+        is_owner = is_owner or int(performer.c_id) == int(user_id)
+    print(sm_id)
+    print(creator_id)
+    print(user_id)
+    print(is_owner)
+
+    return render(request, "space_mission.html", {'mission': mission, 'bids': bids, 'performs_mission': performs_mission, "performer":performer, "is_owner": is_owner, "creator":creator})
+
+
+
     
 def place_bid(request):
     user_id = request.COOKIES.get('user_id')
