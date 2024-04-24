@@ -216,12 +216,12 @@ class Company(models.Model):
     
     def getCreatedMissions(id):
         with connection.cursor() as sql:
-            sql.execute("SELECT * FROM creates_mission CM JOIN Space_Mission SM ON CM.sm_id = SM.sm_id AND CM.c_id = %s", [id])
+            sql.execute("SELECT SM.sm_id, SM.sm_name, SM.sm_duration, SM.sm_destination, SM.sm_astro_cnt, SM.sm_objective FROM creates_mission CM JOIN Space_Mission SM ON CM.sm_id = SM.sm_id AND CM.c_id = %s", [id])
             return sql.fetchall()
 
     def getPerformingMissions(id):
         with connection.cursor() as sql:
-            sql.execute("SELECT * FROM performing_missions PM JOIN Space_Mission SM ON PM.sm_id = SM.sm_id AND PM.c_id = %s", [id])
+            sql.execute("SELECT SM.sm_id, SM.sm_name, SM.sm_duration, SM.sm_destination, SM.sm_astro_cnt, SM.sm_objective FROM performing_missions PM JOIN Space_Mission SM ON PM.sm_id = SM.sm_id AND PM.c_id = %s", [id])
             return sql.fetchall()
 
 class Launch_Site(models.Model):

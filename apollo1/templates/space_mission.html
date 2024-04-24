@@ -50,8 +50,11 @@
                     </select>
                 </form>
             </td>
-            {%else%}
+            {%else%} {%if performs_mission.2 == 'Incomplete'%}
             <td>{{performs_mission.2}}</td>
+            {%else%}
+            <td>{{performs_mission.2}} (Completed)</td>
+            {%endif%}
             {%endif%}
             {%else%}
             <td>In bidding</td>

@@ -7,6 +7,7 @@
     <title>Usesr Missions</title>
 
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
 
 
 </head>
@@ -17,41 +18,70 @@
     </div>
 
     <h3>Performing Missions</h3>
-    
-    <span>name,</span>
-    <span>duration,</span>
-    <span>destination,</span>
-    <span>astroCnt,</span>
-    <span>Company,</span>
-    <span>Country</span><br>
+    <table>
+        <tr>
+            <th>Mission ID</th>
+            <th>Mission Name</th>
+            <th>Mission Duration (Days)</th>
+            <th>Destination</th>
+            <th>Astronaut Amount</th>
+            <th>Objective</th>
+            <th>View</th>
+
+        </tr>
     {% for mission in performing_missions %}
-        <span>{{mission.0}},</span>
-        <span>{{mission.1}},</span>
-        <span>{{mission.2}},</span>
-        <span>{{mission.3}},</span>
-        <span>{{mission.4}},</span>
-        <span>{{mission.5}},</span>
+        <tr>
+            <td>{{mission.0}}</td>
+            <td>{{mission.1}}</td>
+            <td>{{mission.2}}</td>
+            <td>{{mission.3}}</td>
+            <td>{{mission.4}}</td>
+            <td>{{mission.5}}</td>
+            <td>
+                <form action="{% url 'space_mission' %}" method="get">
+                    {% csrf_token %}
+                    <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.1 }}" />
+                    <button type="submit">View</button>
+                </form>
+            </td>
+            
+        </tr>
     {% endfor %}
+    </table>
+
     <h3>Created Missions</h3>
+    <table>
+        <tr>
+            <th>Mission ID</th>
+            <th>Mission Name</th>
+            <th>Mission Duration (Days)</th>
+            <th>Destination</th>
+            <th>Astronaut Amount</th>
+            <th>Objective</th>
+            <th>View</th>
 
-    <span>name,</span>
-    <span>duration,</span>
-    <span>destination,</span>
-    <span>astroCnt,</span>
-    <span>Company,</span>
-    <span>Country</span><br>
-    {% for mission in creating_missions %}
-    <span>{{mission.0}},</span>
-    <span>{{mission.1}},</span>
-    <span>{{mission.2}},</span>
-    <span>{{mission.3}},</span>
-    <span>{{mission.4}},</span>
-    <span>{{mission.5}},</span>
+        </tr>
+    {% for mission in created_missions %}
+        <tr>
+            <td>{{mission.0}}</td>
+            <td>{{mission.1}}</td>
+            <td>{{mission.2}}</td>
+            <td>{{mission.3}}</td>
+            <td>{{mission.4}}</td>
+            <td>{{mission.5}}</td>
+            <td>
+                <form action="{% url 'space_mission' %}" method="get">
+                    {% csrf_token %}
+                    <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.1 }}" />
+                    <button type="submit">View</button>
+                </form>
+            </td>
+            
+        </tr>
     {% endfor %}
+    </table>
 
-    <span>{{created_missions}}
-    <span>{{performing_missions}}
-    <br>
+
 
 
     <div class="logout">
