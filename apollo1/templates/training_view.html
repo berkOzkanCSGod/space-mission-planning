@@ -1,0 +1,52 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Missions</title>
+
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+
+
+</head>
+<body>
+    <div class="navbar">
+        <a href="dashboard">Dashboard</a>
+        <a href="profile">Profile</a>
+    </div>
+
+    <h1>Astronaut's Trainings</h1>
+    <table>
+        <tr>
+            <th>Training ID</th>
+            <th>Training Name</th>
+            <th>Training Description</th>
+            <th>Status</th>
+        </tr>
+    {% for training in astro_trainings %}
+        <tr>
+            <td>{{training.0}}</td>
+            <td>{{training.1}}</td>
+            <td>{{training.2}}</td>
+            {% if training.3 == 0 %}
+                <td style="color: green;">Passed</td>
+            {% elif training.3 == 1 %}
+                <td style="color: red;">Failed</td>
+            {% else %}
+                <td style="color: blue;">Not Completed</td>
+            {% endif %}
+            
+        </tr>
+    {% endfor %}
+    </table>
+
+    <div class="logout">
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+    {% if err_msg %}
+        <p style="color: red;">{{ err_msg }}</p>
+    {% endif %}
+</body>
+</html>

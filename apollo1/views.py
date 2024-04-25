@@ -293,4 +293,16 @@ def user_missions(request):
         return HttpResponseRedirect(reverse('home'))
     else:
         return render(request, "user_missions.html", {'created_missions': created_missions, 'performing_missions':performing_missions})
+
+def training_view(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role') 
+    if 'user_id' not in request.COOKIES:
+        return HttpResponseRedirect(reverse('login'))
+    
+    if (request.method == 'POST'):
+        return HttpResponseRedirect(reverse('home'))
+    else:
+        astro_trainings = Astronaut.getAstronautTrainings(user_id)
+        return render(request, "training_view.html", {'astro_trainings': astro_trainings})
     
