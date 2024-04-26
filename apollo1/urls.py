@@ -16,6 +16,10 @@ urlpatterns = [
     path("login/", views.login, name='login'),
     path("signup/", views.signup, name='signup'),
     path("logout/", views.logout, name='logout'),
+    path("home/bank_account", views.get_bank_account, name='get_bank_account'),
+    path("home/create_bank_account", views.create_bank_account, name='create_bank_account'),
+    path("home/make_transaction", views.make_transaction, name='make_transaction'),
+    path("home/transactions", views.get_filtered_transactions, name='get_filtered_transactions'),
 ]
 
 # urlpatterns += staticfiles_urlpatterns()
