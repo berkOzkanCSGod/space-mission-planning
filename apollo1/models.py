@@ -362,7 +362,7 @@ class Space_Mission(models.Model):
     def updateStatus(sm_id, status):
         with connection.cursor() as sql:
             sql.execute("UPDATE performing_missions SET status = %s WHERE sm_id = %s", [status,sm_id])
-    def getRequiredTrainings(cls, id):
+    def getRequiredTrainings(id):
         with connection.cursor() as sql:
             sql.execute("SELECT T.t_id, T.t_name, T.t_description, T.t_status FROM training T, required R WHERE R.sm_id=%s AND R.t_id = T.t_id ORDER BY T.t_id ASC", [id])
             return sql.fetchall()

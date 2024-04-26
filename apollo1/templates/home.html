@@ -14,6 +14,7 @@
     <div class="navbar">
         <a href="dashboard">Dashboard</a>
         <a href="profile">Profile</a>
+        <a href="{% url 'logout' %}">Logout</a>
     </div>
     <h1>Home page</h1>
     <ul>
@@ -21,9 +22,7 @@
             <li>{{ item.username }} - {{ item.password }}</li>
         {% endfor %} {% endcomment %}
     </ul>
-    <div class="logout">
-        <a href="{% url 'logout' %}">Logout</a>
-    </div>
+
     {% if err_msg %}
         <p style="color: red;">{{ err_msg }}</p>
     {% endif %}

@@ -228,6 +228,7 @@ def space_mission(request):
     mission = Space_Mission.getMissionByName(mission_name)
     sm_id = Space_Mission.findIdByName(mission_name)
     bids = list(Space_Mission.findBids(sm_id))
+    sm_trainings = Space_Mission.getRequiredTrainings(sm_id)
     for i in range(0,len(bids)):
         bids[i] = list(bids[i])
         bids[i].append(Company.getUserById(bids[i][1]).c_name)
@@ -249,7 +250,7 @@ def space_mission(request):
     print(user_id)
     print(is_owner)
 
-    return render(request, "space_mission.html", {'mission': mission, 'bids': bids, 'performs_mission': performs_mission, "performer":performer, "is_owner": is_owner, "creator":creator})
+    return render(request, "space_mission.html", {'mission': mission, 'bids': bids, 'performs_mission': performs_mission, "performer":performer, "is_owner": is_owner, "creator":creator, "sm_trainings": sm_trainings})
 
 
 
