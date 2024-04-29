@@ -17,11 +17,24 @@
         <a href="{% url 'logout' %}">Logout</a>
     </div>
     <h1>Dashboard</h1>
-    <a href="create_mission">Create Space Mission</a>
-    <a href="space_missions">Space Missions</a>
-    <a href="user_missions">User Missions</a>
-    <a href="training_view">User Trainings</a>
-    
+    {% if user_role == "admin" %}
+    <ul>
+        <li><a href="most_expensive_mission">Find Most Expensive Mission</a></li>
+        <li><a href="mission_with_most_astronauts">Find The Mission With Most Astronauts</a></li>
+        <li><a href="most_active_creator_company">Find The Company With Most Amount Of Created Missions</a></li>
+        <li><a href="most_active_executor_company">Find The Company With Most Number Of Performing Missions</a></li>
+        <li><a href="mission_with_highest_bid">Find The Mission With Current Highest Bid</a></li>
+    </ul>
+    {% elif user_role == "astronaut" %}
+        <a href="space_missions">Space Missions</a>
+        <a href="user_missions">User Missions</a>
+        <a href="training_view">User Trainings</a>
+    {% else %}
+        <a href="create_mission">Create Space Mission</a>
+        <a href="space_missions">Space Missions</a>
+        <a href="user_missions">User Missions</a>    
+    {% endif %}
+
     {% if err_msg %}
         <p style="color: red;">{{ err_msg }}</p>
     {% endif %}

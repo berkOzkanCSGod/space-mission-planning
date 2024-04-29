@@ -19,7 +19,9 @@
         <p style="color: red;">{{ error_message }}</p>
     {% endif %}
 
-    {%if role == "astronaut"%}
+    {% if role == "admin" %}
+        <h1>{{profile.admin_email}}</h1>
+    {%elif role == "astronaut"%}
         <h1>{{profile.astro_email}}</h1>
         <form action="{% url 'update_field' %}?field=astro_name" method="post">
             {% csrf_token %}

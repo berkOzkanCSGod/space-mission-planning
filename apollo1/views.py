@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Astronaut, Company, Space_Mission
+from .models import Astronaut, Company, Space_Mission, Admin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -43,8 +43,15 @@ def login(request):
                 return render(request, 'login.html', {'err_msg': error_message})
 
         else:
-            error_message = 'Email does not exists in our database'
-            return render(request, 'login.html', {'err_msg': error_message})
+            user = Admin.authenticateUser(email, password)
+            if user is not None:
+                response = HttpResponseRedirect(reverse('home'))
+                response.set_cookie('user_id', user.admin_id)
+                response.set_cookie('user_role', role)
+                return response
+            else:
+                error_message = 'Invalid username or password.'
+                return render(request, 'login.html', {'err_msg': error_message})
 
         
     else:
@@ -123,6 +130,10 @@ def profile(request):
         user = Company.getUserById(user_id)
         if user:
             return render(request, "profile.html", {'profile': user, 'role': user_role})
+    elif user_role == 'admin':
+        user = Admin.getUserById(user_id)
+        if user:
+            return render(request, "profile.html", {'profile': user, 'role': user_role})
 
     error_message = 'Issue with accessing profile'
     return HttpResponseRedirect(reverse('home')) 
@@ -156,7 +167,7 @@ def dashboard(request):
     if (request.method == 'POST'):
         pass
     else:
-        return render(request, "dashboard.html")
+        return render(request, "dashboard.html", {'user_id': user_id, 'user_role': user_role})
     
 def create_mission(request):
     user_id = request.COOKIES.get('user_id')
@@ -253,8 +264,6 @@ def space_mission(request):
     return render(request, "space_mission.html", {'mission': mission, 'bids': bids, 'performs_mission': performs_mission, "performer":performer, "is_owner": is_owner, "creator":creator, "sm_trainings": sm_trainings})
 
 
-
-    
 def place_bid(request):
     user_id = request.COOKIES.get('user_id')
     user_role = request.COOKIES.get('user_role') 

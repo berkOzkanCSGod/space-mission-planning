@@ -1,7 +1,49 @@
 from django.db import models, connection
 from django.contrib.auth import login
 
+class Admin(models.Model):
+    admin_id = models.AutoField(primary_key=True)
+    admin_email = models.CharField(max_length=50)
+    admin_password = models.CharField(max_length=50)
+    admin_creation_date = models.DateField(auto_now_add=True)
 
+    @classmethod
+    def authenticateUser(cls, email, password):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM admin WHERE admin_email=%s", [email])
+            res = sql.fetchone()
+
+            if res is not None:
+                admin_user = cls(
+                    admin_id=res[0],
+                    admin_email=res[1],
+                    admin_password=res[2],
+                    admin_creation_date=res[3]
+                )   
+
+                if admin_user.admin_password == password:
+                    return admin_user
+                else:
+                    return None     
+            else: 
+                return None
+    
+    @classmethod
+    def getUserById(cls, id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM admin WHERE admin_id=%s", [id])
+            res = sql.fetchone()
+
+            if res:
+                admin_user = cls(
+                    admin_id=res[0],
+                    admin_email=res[1],
+                    admin_password=res[2],
+                    admin_creation_date=res[3]
+                )   
+                return admin_user
+            else:
+                return None
 
 class Astronaut(models.Model):
     astro_id = models.AutoField(primary_key=True)
@@ -74,10 +116,14 @@ class Astronaut(models.Model):
             astro = sql.fetchone()
             sql.execute("SELECT * FROM company WHERE c_email=%s", [email])
             comp = sql.fetchone()
+            sql.execute("SELECT * FROM admin WHERE admin_email=%s", [email])
+            admin = sql.fetchone()
             if astro is not None:
                 return 'astronaut'
             elif comp is not None:
                 return 'company'
+            elif admin is not None:
+                return 'admin'
             else:
                 return None
             
