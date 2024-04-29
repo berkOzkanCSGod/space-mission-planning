@@ -82,7 +82,7 @@
         <form action="{% url 'update_field' %}?field=c_name" method="post">
             {% csrf_token %}
             <div class="form-group">
-                <lable for="input">Name</label>
+                <label for="input">Name</label>
                 <input type="text" id="input" name="input" value={{profile.c_name}}>
                 <button type="submit">Update</button>
             </div>
@@ -103,6 +103,11 @@
                 <button type="submit">Update</button>
             </div>
         </form>
+
+        <div class="bank-accounts">
+            <h2>Bank Accounts</h2>
+            <a href="{% url 'get_bank_account' %}" class="button">View Bank Accounts</a>
+        </div>
     {% endif %}
 
     <div class="logout">

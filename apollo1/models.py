@@ -1,5 +1,6 @@
 from django.db import models, connection
 from django.contrib.auth import login
+from decimal import Decimal
 
 class Admin(models.Model):
     admin_id = models.AutoField(primary_key=True)
@@ -19,15 +20,15 @@ class Admin(models.Model):
                     admin_email=res[1],
                     admin_password=res[2],
                     admin_creation_date=res[3]
-                )   
+                )
 
                 if admin_user.admin_password == password:
                     return admin_user
                 else:
-                    return None     
-            else: 
+                    return None
+            else:
                 return None
-    
+
     @classmethod
     def getUserById(cls, id):
         with connection.cursor() as sql:
@@ -40,7 +41,7 @@ class Admin(models.Model):
                     admin_email=res[1],
                     admin_password=res[2],
                     admin_creation_date=res[3]
-                )   
+                )
                 return admin_user
             else:
                 return None
@@ -84,6 +85,7 @@ class Astronaut(models.Model):
                 return astro_user        
             return res
 
+
     @classmethod
     def authenticateUser(cls, email, password):
         with connection.cursor() as sql:
@@ -126,7 +128,7 @@ class Astronaut(models.Model):
                 return 'admin'
             else:
                 return None
-            
+
     @classmethod
     def getAstronautTrainings(cls, id):
         with connection.cursor() as sql:
@@ -204,7 +206,7 @@ class Company(models.Model):
                 sql.execute("INSERT INTO Bank_Account DEFAULT VALUES RETURNING bank_id")
                 # sql.execute("SELECT LAST_INSERT_ID()")
                 bank_id = sql.fetchone()[0]
-                sql.execute("INSERT INTO company_bank_relation (bank_id, c_id) VALUES (%s, %s)", [bank_id, comp_user.c_id])
+                sql.execute("INSERT INTO owns (bank_id, c_id) VALUES (%s, %s)", [bank_id, comp_user.c_id])
 
                 return comp_user        
             return res
@@ -273,16 +275,17 @@ class Company(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT SM.sm_id, SM.sm_name, SM.sm_duration, SM.sm_destination, SM.sm_astro_cnt, SM.sm_objective FROM performing_missions PM JOIN Space_Mission SM ON PM.sm_id = SM.sm_id AND PM.c_id = %s", [id])
             return sql.fetchall()
-        
+
     def getMostActiveCreatorCompany():
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM company WHERE c_id = (SELECT c_id FROM creates_mission GROUP BY c_id ORDER BY COUNT(sm_id) DESC LIMIT 1)")
             return sql.fetchall()
-    
+
     def getMostActiveExecutorCompany():
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM company WHERE c_id = (SELECT c_id FROM performing_missions GROUP BY c_id ORDER BY COUNT(sm_id) DESC LIMIT 1)")
             return sql.fetchall()
+
 
 class Launch_Site(models.Model):
     ls_id = models.AutoField(primary_key=True)
@@ -388,6 +391,7 @@ class Space_Mission(models.Model):
                 return row[0]
             else:
                 return None
+
     def findCreatorId(sm_id):
         with connection.cursor() as sql:
             sql.execute('''
@@ -401,6 +405,7 @@ class Space_Mission(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM bids WHERE sm_id=%s", [sm_id])
             return sql.fetchall()
+
     def findPerformingMission(sm_id):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM performing_missions WHERE sm_id=%s", [sm_id])
@@ -412,17 +417,20 @@ class Space_Mission(models.Model):
 
             sql.execute("INSERT INTO bids (sm_id, c_id, amount) VALUES (%s, %s, %s)", [sm_id, c_id, amount])
             return None
+
     def acceptBid(sm_id, c_id):
         with connection.cursor() as sql:
             sql.execute("INSERT INTO performing_missions (c_id, sm_id) VALUES (%s,%s)", [c_id, sm_id])
+
     def updateStatus(sm_id, status):
         with connection.cursor() as sql:
-            sql.execute("UPDATE performing_missions SET status = %s WHERE sm_id = %s", [status,sm_id])
+            sql.execute("UPDATE performing_missions SET status = %s WHERE sm_id = %s", [status, sm_id])
+
     def getRequiredTrainings(id):
         with connection.cursor() as sql:
             sql.execute("SELECT T.t_id, T.t_name, T.t_description, T.t_status FROM training T, required R WHERE R.sm_id=%s AND R.t_id = T.t_id ORDER BY T.t_id ASC", [id])
             return sql.fetchall()
-        
+
     def getMostExpensiveMission(): #Not completed yet
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM space_mission")
@@ -432,8 +440,118 @@ class Space_Mission(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM space_mission WHERE sm_astro_cnt = (SELECT MAX(sm_astro_cnt) FROM space_mission)")
             return sql.fetchall()
-        
+
     def getMissionWithHighestBid():
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM space_mission WHERE sm_id = (SELECT sm_id FROM bids GROUP BY sm_id ORDER BY MAX(amount) DESC LIMIT 1)")
             return sql.fetchall()
+
+
+class Bank_Account(models.Model):
+    bank_id = models.AutoField(primary_key=True)
+    bank_balance = models.DecimalField(max_digits=10, decimal_places=2)
+    bank_company_id = models.ForeignKey(Company, on_delete=models.CASCADE)  # company that owns the bank account
+    bank_account_number = models.CharField(max_length=50)
+
+    def createBankAccount(c_id, bank_account_number):
+        with connection.cursor() as sql:
+            sql.execute("""
+            INSERT INTO bank_account (bank_balance, bank_company_id, bank_account_number) VALUES (100000, %s, %s) RETURNING bank_id
+            """, [c_id, bank_account_number])
+            bank_id = sql.fetchone()[0]
+            sql.execute("INSERT INTO owns (bank_id, c_id) VALUES (%s, %s)", [bank_id, c_id])
+            return bank_id
+
+    def getBalance(bank_id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT bank_balance FROM bank_account WHERE bank_id=%s", [bank_id])
+            acc = sql.fetchone()
+            if acc is None:
+                print("No bank account found")
+                return None
+            balance = acc[0]
+            return balance
+
+    def getBankAccountId(c_id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT bank_id FROM owns WHERE c_id=%s", [c_id])
+            res = sql.fetchone()
+            if res is None:
+                return None
+            return res[0]
+
+    def getBankAccount(c_id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM owns WHERE c_id=%s", [c_id])  # get the bank_id from owns table
+            res = sql.fetchone()
+            if res is None:
+                return None
+            sql.execute("SELECT * FROM bank_account WHERE bank_id=%s", [res[0]])
+            account = sql.fetchone()
+            return account
+
+    def updateBalance(bank_id, amount):
+        with connection.cursor() as sql:
+            balance = Bank_Account.getBalance(bank_id)
+            if not isinstance(amount, Decimal):
+                amount = Decimal(amount)
+            if balance + amount < 0:
+                return False
+            else:
+                new_balance = balance + amount
+                sql.execute("UPDATE bank_account SET bank_balance=%s WHERE bank_id=%s", [new_balance, bank_id])
+                return True
+
+
+class Transaction(models.Model):
+    # to avoid reverse accessor clash, we need to use related_name
+    receiver_id = models.ForeignKey(Bank_Account, on_delete=models.CASCADE, related_name='receiver')
+    sender_id = models.ForeignKey(Bank_Account, on_delete=models.CASCADE, related_name='sender')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    transaction_date = models.DateField(auto_now_add=True)
+
+    def createTransaction(sender_id, receiver_id, amount):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM bank_account WHERE bank_account_number=%s", [sender_id])
+            sender = sql.fetchone()
+            sql.execute("SELECT * FROM bank_account WHERE bank_account_number=%s", [receiver_id])
+            receiver = sql.fetchone()
+            if sender is None or receiver is None:
+                return False
+            if sender[1] >= amount:  # check if sender has enough balance
+                sender_bank_id = sender[0]
+                receiver_bank_id = receiver[0]
+                sql.execute("INSERT INTO transaction (receiver_id, sender_id, amount) VALUES (%s, %s, %s)", [receiver_bank_id, sender_bank_id, amount])
+
+                Bank_Account.updateBalance(sender_bank_id, -amount)
+                Bank_Account.updateBalance(receiver_bank_id, amount)
+                return True
+            else:
+                return False
+
+    def getTransactions(c_id):
+        with connection.cursor() as sql:
+            bank_id = Bank_Account.getBankAccountId(c_id)
+            sql.execute("SELECT * FROM transaction WHERE receiver_id=%s OR sender_id=%s", [bank_id, bank_id])
+            return sql.fetchall()
+
+    def getFilteredTransactions(c_id, date=None, amount_less_than=None, amount_greater_than=None):
+        with connection.cursor() as sql:
+            bank_id = Bank_Account.getBankAccountId(c_id)
+            query = "SELECT * FROM transaction WHERE (receiver_id=%s OR sender_id=%s)"
+            params = [bank_id, bank_id]
+
+            if date:
+                query += " AND transaction_date=%s"
+                params.append(date)
+
+            if amount_less_than is not None:
+                query += " AND amount<%s"
+                params.append(amount_less_than)
+
+            if amount_greater_than is not None:
+                query += " AND amount>%s"
+                params.append(amount_greater_than)
+            sql.execute(query, params)
+            return sql.fetchall()
+
