@@ -285,6 +285,11 @@ class Company(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM company WHERE c_id = (SELECT c_id FROM performing_missions GROUP BY c_id ORDER BY COUNT(sm_id) DESC LIMIT 1)")
             return sql.fetchall()
+        
+    def getAstronauts(id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * from astronaut WHERE astro_id IN (SELECT WF.astro_id FROM works_for WF WHERE WF.c_id = %s)", [id])
+            return sql.fetchall()
 
 
 class Launch_Site(models.Model):
@@ -445,6 +450,10 @@ class Space_Mission(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM space_mission WHERE sm_id = (SELECT sm_id FROM bids GROUP BY sm_id ORDER BY MAX(amount) DESC LIMIT 1)")
             return sql.fetchall()
+        
+    def assignAstro(sm_id, astro_id):
+        with connection.cursor() as sql:
+            sql.execute("INSERT INTO assigned_to (astro_id, sm_id) VALUES (%s, %s)", [astro_id, sm_id])
 
 
 class Bank_Account(models.Model):

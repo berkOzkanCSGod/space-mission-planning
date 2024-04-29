@@ -39,7 +39,7 @@
             <td>{{mission.4}}</td>
             <td>{{mission.5}}</td>
             {%if performs_mission%}
-            {%if performs_mission.2 == 'Incomplete' and is_owner%}
+            {%if performs_mission.2 == 'Incomplete' and is_creator%}
             <td>   
                 <form action="{% url 'space_mission' %}" method="post">
                     {% csrf_token %}
@@ -82,7 +82,7 @@
         </tr>
     </table>
 
-    {%if performs_mission%}
+    {% if performs_mission %}
     <h1>Mission Performing Company</h1>
     <table>
         <tr>
@@ -100,7 +100,26 @@
             <td>{{performer.c_country_origin}}</td>
         </tr>
     </table>
+    {% endif %}
+    {%if is_performer%}
+    <h2>Assign Astronauts to Mission</h2>
+    {% if company_astros %}
+    <form method="POST" action="{% url 'assign_astro' %}">
+        {% csrf_token %}
+        <input type="hidden" name="mission_name" value="{{ mission.1}}">
+        <h3>Astronauts working for your company:</h3>
+        <select name="astro_id" id="astronaut">
+            {% for astro in company_astros %}
+            <option value="{{ astro.0 }}">Astronaut ID: {{ astro.0 }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Assign Astronaut">
+    </form>
+    {% else %}
+    <p>No astronauts available.</p>
+    {% endif %}
     {%endif%}
+    
     <h1>
         Bids
     </h1>
@@ -109,7 +128,7 @@
         <tr>
             <th>Company Name</th>
             <th>Amount (USD)</th>
-            {%if is_owner and not performs_mission%}
+            {%if is_creator and not performs_mission%}
             <th>Accept</th>
             {%endif%}
         </tr>
@@ -117,7 +136,7 @@
         <tr>
             <td>{{bid.3}}</td>
             <td>{{bid.2}}</td>
-            {%if is_owner and not performs_mission%}
+            {%if is_creator and not performs_mission%}
             <td>
                 <form action="{% url 'space_mission' %}" method="post">
                     {% csrf_token %}

@@ -282,15 +282,20 @@ def space_mission(request):
     print('performer', performer)
     creator_id = Space_Mission.findCreatorId(sm_id)
     creator = Company.getUserById(creator_id)
-    is_owner = int(creator_id) == int(user_id)
+    is_creator = int(creator_id) == int(user_id)
+    is_performer = False
     if performs_mission:
-        is_owner = is_owner or int(performer.c_id) == int(user_id)
+        is_performer = int(performer.c_id) == int(user_id)
+    company_astros = []
+    if is_performer:
+        company_astros = list(Company.getAstronauts(user_id))
     print(sm_id)
     print(creator_id)
     print(user_id)
-    print(is_owner)
+    print(is_creator)
+    print(is_performer)
 
-    return render(request, "space_mission.html", {'mission': mission, 'bids': bids, 'performs_mission': performs_mission, "performer":performer, "is_owner": is_owner, "creator":creator, "sm_trainings": sm_trainings})
+    return render(request, "space_mission.html", {'mission': mission, 'bids': bids, 'performs_mission': performs_mission, "performer":performer, "is_creator": is_creator, "is_performer": is_performer, "creator":creator, "sm_trainings": sm_trainings, "company_astros": company_astros})
 
 
 def place_bid(request):
@@ -312,6 +317,25 @@ def place_bid(request):
         return HttpResponseRedirect(reverse('home'))
     else:
         return render(request, "place_bid.html", {'mission': Space_Mission.getMissionByName(mission_name)})
+    
+
+def assign_astro(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role') 
+    if 'user_id' not in request.COOKIES:
+        return HttpResponseRedirect(reverse('login'))
+    elif user_role != 'company':
+        return HttpResponseRedirect(reverse('home'))
+    
+    if request.method == 'POST':
+        mission_name = request.POST.get('mission_name')
+        astro_id = request.POST.get('astro_id')
+        print(mission_name, astro_id)
+        sm_id = Space_Mission.findIdByName(mission_name)
+        print(sm_id)
+        res = Space_Mission.assignAstro(sm_id, astro_id)
+    return HttpResponseRedirect(reverse('home'))
+
 
 
 def user_missions(request):

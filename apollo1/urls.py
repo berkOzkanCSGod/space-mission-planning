@@ -11,6 +11,7 @@ urlpatterns = [
     path("home/create_mission", views.create_mission, name='create_mission'),
     path("home/space_missions", views.space_missions, name='space_missions'),
     path("home/space_mission", views.space_mission, name='space_mission'),
+    path("home/space_mission/assign_astro", views.assign_astro, name='assign_astro'),
     path("home/user_missions", views.user_missions, name='user_missions'),
     path("home/place_bid", views.place_bid, name='place_bid'),
     path("home/training_view", views.training_view, name='training_view'),
