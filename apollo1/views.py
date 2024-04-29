@@ -199,6 +199,28 @@ def create_mission(request):
         ls = Space_Mission.getLaunchSites()
         return render(request, "create_mission.html", {'launch_sites': ls})
     
+def system_report(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role')
+    report_type = request.GET.get('report_type') 
+    if 'user_id' not in request.COOKIES:
+        return HttpResponseRedirect(reverse('login'))
+    if user_role != 'admin':
+        return HttpResponseRedirect(reverse('home'))
+    if (request.method == 'GET'):
+        if report_type == 'most_expensive_mission':
+            return render(request, "system_report.html", {'missions': Space_Mission.getMostExpensiveMission(), 'report_type': report_type})
+        elif report_type == 'mission_with_most_astronauts':
+            return render(request, "system_report.html", {'missions': Space_Mission.getMissionWithMostAstronauts(), 'report_type': report_type})
+        elif report_type == 'most_active_creator_company':
+            return render(request, "system_report.html", {'companies': Company.getMostActiveCreatorCompany(), 'report_type': report_type})
+        elif report_type == 'most_active_executor_company':
+            return render(request, "system_report.html", {'companies': Company.getMostActiveExecutorCompany(), 'report_type': report_type})
+        elif report_type == 'mission_with_highest_bid':
+            return render(request, "system_report.html", {'missions': Space_Mission.getMissionWithHighestBid(), 'report_type': report_type})
+        else:
+            return HttpResponseRedirect(reverse('home'))
+    
 
 def space_missions(request):
     user_id = request.COOKIES.get('user_id')

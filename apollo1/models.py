@@ -273,6 +273,16 @@ class Company(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT SM.sm_id, SM.sm_name, SM.sm_duration, SM.sm_destination, SM.sm_astro_cnt, SM.sm_objective FROM performing_missions PM JOIN Space_Mission SM ON PM.sm_id = SM.sm_id AND PM.c_id = %s", [id])
             return sql.fetchall()
+        
+    def getMostActiveCreatorCompany():
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM company WHERE c_id = (SELECT c_id FROM creates_mission GROUP BY c_id ORDER BY COUNT(sm_id) DESC LIMIT 1)")
+            return sql.fetchall()
+    
+    def getMostActiveExecutorCompany():
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM company WHERE c_id = (SELECT c_id FROM performing_missions GROUP BY c_id ORDER BY COUNT(sm_id) DESC LIMIT 1)")
+            return sql.fetchall()
 
 class Launch_Site(models.Model):
     ls_id = models.AutoField(primary_key=True)
@@ -411,4 +421,19 @@ class Space_Mission(models.Model):
     def getRequiredTrainings(id):
         with connection.cursor() as sql:
             sql.execute("SELECT T.t_id, T.t_name, T.t_description, T.t_status FROM training T, required R WHERE R.sm_id=%s AND R.t_id = T.t_id ORDER BY T.t_id ASC", [id])
+            return sql.fetchall()
+        
+    def getMostExpensiveMission(): #Not completed yet
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM space_mission")
+            return sql.fetchall()
+
+    def getMissionWithMostAstronauts():
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM space_mission WHERE sm_astro_cnt = (SELECT MAX(sm_astro_cnt) FROM space_mission)")
+            return sql.fetchall()
+        
+    def getMissionWithHighestBid():
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM space_mission WHERE sm_id = (SELECT sm_id FROM bids GROUP BY sm_id ORDER BY MAX(amount) DESC LIMIT 1)")
             return sql.fetchall()

@@ -19,11 +19,11 @@
     <h1>Dashboard</h1>
     {% if user_role == "admin" %}
     <ul>
-        <li><a href="most_expensive_mission">Find Most Expensive Mission</a></li>
-        <li><a href="mission_with_most_astronauts">Find The Mission With Most Astronauts</a></li>
-        <li><a href="most_active_creator_company">Find The Company With Most Amount Of Created Missions</a></li>
-        <li><a href="most_active_executor_company">Find The Company With Most Number Of Performing Missions</a></li>
-        <li><a href="mission_with_highest_bid">Find The Mission With Current Highest Bid</a></li>
+        <li><a href="system_report?report_type=most_expensive_mission">Find Most Expensive Mission</a></li>
+        <li><a href="system_report?report_type=mission_with_most_astronauts">Find The Mission With Most Astronauts</a></li>
+        <li><a href="system_report?report_type=most_active_creator_company">Find The Company With Most Amount Of Created Missions</a></li>
+        <li><a href="system_report?report_type=most_active_executor_company">Find The Company With Most Number Of Performing Missions</a></li>
+        <li><a href="system_report?report_type=mission_with_highest_bid">Find The Mission With Current Highest Bid</a></li>
     </ul>
     {% elif user_role == "astronaut" %}
         <a href="space_missions">Space Missions</a>

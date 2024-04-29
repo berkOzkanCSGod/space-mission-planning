@@ -1,0 +1,69 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>System Report</title>
+
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <a href="dashboard">Dashboard</a>
+        <a href="profile">Profile</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+    <h1>System Report</h1>
+
+    {% if report_type == 'most_expensive_mission' or report_type == 'mission_with_most_astronauts' or report_type == 'mission_with_highest_bid' %}
+        {% if report_type == 'most_expensive_mission' %}
+            <h2>Most Expensive Mission</h2>
+        {% elif report_type == 'mission_with_most_astronauts' %}
+            <h2>Mission with Most Astronauts</h2>
+        {% elif report_type == 'mission_with_highest_bid' %}
+            <h2>Mission with Highest Bid</h2>
+        {% endif %}
+        <table>
+            <tr>
+                <th>Mission ID</th>
+                <th>Mission Name</th>
+            </tr>
+            {% for mission in missions %}
+                <tr>
+                    <td>{{ mission.0 }}</td>
+                    <td>{{ mission.1 }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">No missions found.</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% elif report_type == 'most_active_creator_company' or report_type == 'most_active_executor_company' %}
+        {% if report_type == 'most_active_creator_company' %}
+            <h2>Most Active Creator Company</h2>
+        {% elif report_type == 'most_active_executor_company' %}
+            <h2>Most Active Executor Company</h2>
+        {% endif %}
+        <table>
+            <tr>
+                <th>Company ID</th>
+                <th>Company Name</th>
+            </tr>
+            {% for company in companies %}
+                <tr>
+                    <td>{{ company.0 }}</td>
+                    <td>{{ company.4 }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">No companies found.</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
