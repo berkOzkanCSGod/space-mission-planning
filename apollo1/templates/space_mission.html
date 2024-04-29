@@ -175,6 +175,24 @@
     <p>There are no required trainings.</p>
     {%endif%}
 
+    <h1>Assigned Astronauts</h1>
+    {%if assigned_astros%}
+    <table>
+        <tr>
+            <th>Astronaut ID</th>
+            <th>Astronaut Mail</th>
+        </tr>
+        {%for astro in assigned_astros%}
+        <tr>
+            <td>{{astro.0}}</td>
+            <td>{{astro.1}}</td>
+        </tr>
+        {%endfor%}
+    </table>
+    {%else%}
+    <p>There are no assigned astronauts.</p>
+    {%endif%}
+
     {% if err_msg %}
         <p style="color: red;">{{ err_msg }}</p>
     {% endif %}

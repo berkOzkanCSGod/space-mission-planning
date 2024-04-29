@@ -288,14 +288,15 @@ def space_mission(request):
         is_performer = int(performer.c_id) == int(user_id)
     company_astros = []
     if is_performer:
-        company_astros = list(Company.getAstronauts(user_id))
+        company_astros = list(Company.getTrainedAstronauts(sm_id, user_id))
+    assigned_astros = list(Space_Mission.getAssignedAstronauts(sm_id))
     print(sm_id)
     print(creator_id)
     print(user_id)
     print(is_creator)
     print(is_performer)
 
-    return render(request, "space_mission.html", {'mission': mission, 'bids': bids, 'performs_mission': performs_mission, "performer":performer, "is_creator": is_creator, "is_performer": is_performer, "creator":creator, "sm_trainings": sm_trainings, "company_astros": company_astros})
+    return render(request, "space_mission.html", {'mission': mission, 'bids': bids, 'performs_mission': performs_mission, "performer":performer, "is_creator": is_creator, "is_performer": is_performer, "creator":creator, "sm_trainings": sm_trainings, "company_astros": company_astros, "assigned_astros": assigned_astros})
 
 
 def place_bid(request):

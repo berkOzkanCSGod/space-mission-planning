@@ -132,7 +132,7 @@ class Astronaut(models.Model):
     @classmethod
     def getAstronautTrainings(cls, id):
         with connection.cursor() as sql:
-            sql.execute("SELECT T.t_id, T.t_name, T.t_description, T.t_status FROM training T, completes C WHERE C.astro_id=%s AND C.t_id = T.t_id ORDER BY T.t_id ASC", [id])
+            sql.execute("SELECT T.t_id, T.t_name, T.t_description, C.status FROM training T, completes C WHERE C.astro_id=%s AND C.t_id = T.t_id ORDER BY T.t_id ASC", [id])
             return sql.fetchall()
 
     @classmethod
@@ -290,6 +290,24 @@ class Company(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT * from astronaut WHERE astro_id IN (SELECT WF.astro_id FROM works_for WF WHERE WF.c_id = %s)", [id])
             return sql.fetchall()
+        
+    def getTrainedAstronauts(sm_id, c_id):
+        with connection.cursor() as sql:
+            requiredTrainings = Space_Mission.getRequiredTrainings(sm_id)
+            if len(requiredTrainings) == 0:
+                return Company.getAstronauts(c_id)
+            else:
+                sql.execute("""
+                SELECT A.* 
+                FROM astronaut A
+                JOIN works_for WF ON A.astro_id = WF.astro_id
+                JOIN completes C ON A.astro_id = C.astro_id
+                JOIN required R ON C.t_id = R.t_id
+                WHERE WF.c_id = %s AND R.sm_id = %s AND C.status = 0
+                GROUP BY A.astro_id
+                HAVING COUNT(DISTINCT R.t_id) = (SELECT COUNT(DISTINCT t_id) FROM required WHERE sm_id = %s)
+                """, [c_id, sm_id, sm_id])
+                return sql.fetchall()
 
 
 class Launch_Site(models.Model):
@@ -433,7 +451,7 @@ class Space_Mission(models.Model):
 
     def getRequiredTrainings(id):
         with connection.cursor() as sql:
-            sql.execute("SELECT T.t_id, T.t_name, T.t_description, T.t_status FROM training T, required R WHERE R.sm_id=%s AND R.t_id = T.t_id ORDER BY T.t_id ASC", [id])
+            sql.execute("SELECT T.t_id, T.t_name, T.t_description FROM training T, required R WHERE R.sm_id=%s AND R.t_id = T.t_id ORDER BY T.t_id ASC", [id])
             return sql.fetchall()
 
     def getMostExpensiveMission(): #Not completed yet
@@ -454,6 +472,11 @@ class Space_Mission(models.Model):
     def assignAstro(sm_id, astro_id):
         with connection.cursor() as sql:
             sql.execute("INSERT INTO assigned_to (astro_id, sm_id) VALUES (%s, %s)", [astro_id, sm_id])
+
+    def getAssignedAstronauts(sm_id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM astronaut WHERE astro_id IN (SELECT astro_id FROM assigned_to WHERE sm_id=%s)", [sm_id])
+            return sql.fetchall()
 
 
 class Bank_Account(models.Model):
