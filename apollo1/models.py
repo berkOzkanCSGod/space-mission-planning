@@ -454,9 +454,9 @@ class Space_Mission(models.Model):
             sql.execute("SELECT T.t_id, T.t_name, T.t_description FROM training T, required R WHERE R.sm_id=%s AND R.t_id = T.t_id ORDER BY T.t_id ASC", [id])
             return sql.fetchall()
 
-    def getMostExpensiveMission(): #Not completed yet
+    def getMostExpensiveMission(): 
         with connection.cursor() as sql:
-            sql.execute("SELECT * FROM space_mission")
+            sql.execute("SELECT SM.* FROM space_mission SM, (SELECT B.sm_id FROM bids B, performing_missions PM WHERE PM.sm_id = B.sm_id GROUP BY B.sm_id ORDER BY MAX(B.amount) DESC LIMIT 1) AS T WHERE SM.sm_id = T.sm_id")
             return sql.fetchall()
 
     def getMissionWithMostAstronauts():
