@@ -50,11 +50,11 @@
       star.style.height = star.style.width;
       star.style.top = `${randomInRange(0, 100)}%`;
       star.style.left = `${randomInRange(0, 100)}%`;
-      star.style.animationDuration = `${randomInRange(2, 6)}s`;
+      star.style.animationDuration = `${randomInRange(4, 12)}s`;
       return star;
     }
 
-    const numStars = 100; // Adjust as needed
+    const numStars = 1000; // Adjust as needed
     const body = document.querySelector('body');
     for (let i = 0; i < numStars; i++) {
       const star = createStar();
