@@ -4,6 +4,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 #url config module
 urlpatterns = [
+    path("", views.home, name='home'),
     path("home/", views.home, name='home'),
     path("home/profile", views.profile, name='profile'),
     path("home/update", views.update_field, name='update_field'),

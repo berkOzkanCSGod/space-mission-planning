@@ -1,0 +1,25 @@
+:root {
+    --background-color: #000; 
+    --star-color: #FFF; 
+  }
+
+  body {
+    height: max-content;
+    background-color: var(--background-color);
+    position: relative;
+  }
+
+  .star {
+    position: absolute;
+    background-color: var(--star-color);
+    border-radius: 50%;
+    animation: twinkling 5s infinite;
+  }
+  
+  @keyframes twinkling {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+

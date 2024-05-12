@@ -6,85 +6,149 @@
     <meta charset="UTF-8">
     <title>Space Missions</title>
 
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/background.css' %}">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/table.css' %}">
-
 </head>
 <body>
-    <div class="navbar">
-        <a href="dashboard">Dashboard</a>
-        <a href="profile">Profile</a>
-        <a href="{% url 'logout' %}">Logout</a>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="dashboard">Dashboard</a>
+        <a class="navbar-brand" href="profile">Profile</a>
+        <a class="navbar-brand" href="{% url 'logout' %}">Logout</a>
+    </nav>
+
+    <div class="container bg-white rounded p-4 mt-4 mb-4">
+        <h1>Space Missions</h1>
+        <form action="{% url 'space_missions' %}" method="post" class="form-group">
+            {%csrf_token%}
+            <fieldset>
+                <legend>Filter By:</legend>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="bidding" name="filter" value="bidding" required>
+                            <label class="form-check-label" for="bidding">Currently In Bidding</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="in_progress" name="filter" value="in progress" required>
+                            <label class="form-check-label" for="in_progress">In Progress</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="completed" name="filter" value="completed" required>
+                            <label class="form-check-label" for="completed">Completed</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="duration" name="orderField" value="duration">
+                            <label class="form-check-label" for="duration">Order by Duration</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="astroCnt" name="orderField" value="astroCnt">
+                            <label class="form-check-label" for="astroCnt">Order by Astronaut Count</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="asc" name="orderDirection" value="asc" disabled required>
+                            <label class="form-check-label" for="asc">Increasing</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="desc" name="orderDirection" value="desc" disabled required>
+                            <label class="form-check-label" for="desc">Decreasing</label>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <button type="submit" class="btn btn-primary mt-3">Filter</button>
+            <a href="{% url 'space_missions' %}" class="btn btn-secondary mt-3">Clear Filters</a>
+        </form>
+
+        <table class="table table-striped">
+            <!-- Your table data here -->
+                <tr>
+                    <th>name</th>
+                    <th>duration</th>
+                    <th>destination</th>
+                    <th>astroCnt</th>
+                    <th>Company</th>
+                    <th>Country</th>
+                    {%if filter == 'bidding'%}
+                    <th>Bid</th>
+                    {%endif%}
+                    <th>View</th>
+        
+                </tr>
+            {% for mission in missions %}
+                <tr>
+                    <td>{{mission.0}}</td>
+                    <td>{{mission.1}}</td>
+                    <td>{{mission.2}}</td>
+                    <td>{{mission.3}}</td>
+                    <td>{{mission.4}}</td>
+                    <td>{{mission.5}}</td>
+                    {%if filter == 'bidding'%}
+                    <td>
+                        <form action="{% url 'place_bid' %}" method="get" class="d-inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.0 }}" />
+                            <button type="submit" class="btn btn-primary">Bid</button>
+                        </form>
+                    </td>
+                    {%endif%}
+                    <td>
+                        <form action="{% url 'space_mission' %}" method="get" class="d-inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.0 }}" />
+                            <button type="submit" class="btn btn-secondary">View</button>
+                        </form>
+                    </td>
+                    
+                </tr>
+            {% endfor %}
+        </table>
+
+        {% if err_msg %}
+            <p class="text-danger">{{ err_msg }}</p>
+        {% endif %}
     </div>
 
-    <h1>Space Missions</h1>
-    <form action="{% url 'space_missions' %}" method="post">
-        {%csrf_token%}
-        <div  class="form-group" >
-            <label>Filter By:</label>
-            <div>
-                <label for="filter">Currently Bidding</label>
-                <input type="radio" id="bidding" name="filter" value="bidding" required>
-            </div>
-            <div>
-                <label for="filter">In Progress</label>
-                <input type="radio" id="in progress" name="filter" value="in progress" required>
-            </div>
-            <div>
-                <label for="filter">Completed</label>
-                <input type="radio" id="completed" name="filter" value="completed" required>
-            </div>
-            
-            <button type="submit">Filter</button>
-        </div>
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-    </form>
-    <table>
-        <tr>
-            <th>name</th>
-            <th>duration</th>
-            <th>destination</th>
-            <th>astroCnt</th>
-            <th>Company</th>
-            <th>Country</th>
-            {%if filter == 'bidding'%}
-            <th>Bid</th>
-            {%endif%}
-            <th>View</th>
+    <script>
+        window.onload = function() {
+            document.getElementById('duration').onchange = enableOrderDirection;
+            document.getElementById('astroCnt').onchange = enableOrderDirection;
 
-        </tr>
-    {% for mission in missions %}
-        <tr>
-            <td>{{mission.0}}</td>
-            <td>{{mission.1}}</td>
-            <td>{{mission.2}}</td>
-            <td>{{mission.3}}</td>
-            <td>{{mission.4}}</td>
-            <td>{{mission.5}}</td>
-            {%if filter == 'bidding'%}
-            <td>
-                <form action="{% url 'place_bid' %}" method="get">
-                    {% csrf_token %}
-                    <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.0 }}" />
-                    <button type="submit">Bid</button>
-                </form>
-                
-            </td>
-            {%endif%}
-            <td>
-                <form action="{% url 'space_mission' %}" method="get">
-                    {% csrf_token %}
-                    <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.0 }}" />
-                    <button type="submit">View</button>
-                </form>
-            </td>
-            
-        </tr>
-    {% endfor %}
-    </table>
-    
-    {% if err_msg %}
-        <p style="color: red;">{{ err_msg }}</p>
-    {% endif %}
+            function enableOrderDirection() {
+                document.getElementById('asc').disabled = false;
+                document.getElementById('desc').disabled = false;
+            }
+        }
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.width = `${randomInRange(1, 4)}px`;
+            star.style.height = star.style.width;
+            star.style.top = `${randomInRange(0, 100)}%`;
+            star.style.left = `${randomInRange(0, 100)}%`;
+            star.style.animationDuration = `${randomInRange(4, 12)}s`;
+            return star;
+        }
+
+        const numStars = 1000; // Adjust as needed
+        const body = document.querySelector('body');
+        for (let i = 0; i < numStars; i++) {
+            const star = createStar();
+            body.appendChild(star);
+        }
+    </script>
 </body>
 </html>
