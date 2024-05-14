@@ -27,36 +27,36 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" id="bidding" name="filter" value="bidding" required>
+                            <input class="form-check-input" type="radio" id="bidding" name="filter" value="bidding">
                             <label class="form-check-label" for="bidding">Currently In Bidding</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" id="in_progress" name="filter" value="in progress" required>
+                            <input class="form-check-input" type="radio" id="in_progress" name="filter" value="in_progress">
                             <label class="form-check-label" for="in_progress">In Progress</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" id="completed" name="filter" value="completed" required>
+                            <input class="form-check-input" type="radio" id="completed" name="filter" value="completed">
                             <label class="form-check-label" for="completed">Completed</label>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" id="duration" name="orderField" value="duration">
-                            <label class="form-check-label" for="duration">Order by Duration</label>
+                            <input class="form-check-input" type="radio" id="sm_duration" name="orderField" value="sm_duration">
+                            <label class="form-check-label" for="sm_duration">Order by Duration</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" id="astroCnt" name="orderField" value="astroCnt">
-                            <label class="form-check-label" for="astroCnt">Order by Astronaut Count</label>
+                            <input class="form-check-input" type="radio" id="sm_astro_cnt" name="orderField" value="sm_astro_cnt">
+                            <label class="form-check-label" for="sm_astro_cnt">Order by Astronaut Count</label>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" id="asc" name="orderDirection" value="asc" disabled required>
-                            <label class="form-check-label" for="asc">Increasing</label>
+                            <input class="form-check-input" type="radio" id="ASC" name="orderDirection" value="ASC" disabled required>
+                            <label class="form-check-label" for="ASC">Increasing</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" id="desc" name="orderDirection" value="desc" disabled required>
-                            <label class="form-check-label" for="desc">Decreasing</label>
+                            <input class="form-check-input" type="radio" id="DESC" name="orderDirection" value="DESC" disabled required>
+                            <label class="form-check-label" for="DESC">Decreasing</label>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,6 @@
         </form>
 
         <table class="table table-striped">
-            <!-- Your table data here -->
                 <tr>
                     <th>name</th>
                     <th>duration</th>
@@ -120,12 +119,12 @@
 
     <script>
         window.onload = function() {
-            document.getElementById('duration').onchange = enableOrderDirection;
-            document.getElementById('astroCnt').onchange = enableOrderDirection;
+            document.getElementById('sm_duration').onchange = enableOrderDirection;
+            document.getElementById('sm_astro_cnt').onchange = enableOrderDirection;
 
             function enableOrderDirection() {
-                document.getElementById('asc').disabled = false;
-                document.getElementById('desc').disabled = false;
+                document.getElementById('ASC').disabled = false;
+                document.getElementById('DESC').disabled = false;
             }
         }
         function randomInRange(min, max) {

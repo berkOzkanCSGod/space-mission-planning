@@ -167,6 +167,11 @@ class Astronaut(models.Model):
                 return True
 
         return False
+    
+    def getPerformingMissions(id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT SM.sm_id, SM.sm_name, SM.sm_duration, SM.sm_destination, SM.sm_astro_cnt, SM.sm_objective FROM assigned_to AT JOIN space_mission SM ON AT.sm_id = SM.sm_id AND AT.astro_id = %s", [id])
+            return sql.fetchall()
 
 
 class Company(models.Model):
@@ -370,31 +375,37 @@ class Space_Mission(models.Model):
             sql.execute("SELECT * FROM allmissions")
             return sql.fetchall()
         
-    def filter(filter):
+    def filter(filter, order_field, order_direction):
         with connection.cursor() as sql:
+            order_query = f" ORDER BY {order_field} {order_direction}" if order_field else ""
+            
             if filter == 'bidding':
-                sql.execute('''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
+                sql.execute(f'''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
                             JOIN creates_mission CM ON SM.sm_id = CM.sm_id 
                             JOIN company C ON CM.c_id = C.c_id
-                            WHERE CM.status = 'Bidding'
+                            WHERE CM.status = 'Bidding'{order_query}
                             ''')
                 return sql.fetchall()
-            elif filter == 'in progress':
-                sql.execute('''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
-                            JOIN creates_mission CM ON SM.sm_id = CM.sm_id 
-                            JOIN company C ON CM.c_id = C.c_id
-                            WHERE CM.status = 'In Progress'
+            elif filter == 'in_progress':
+                sql.execute(f'''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
+                            JOIN performing_missions PM ON SM.sm_id = PM.sm_id 
+                            JOIN company C ON PM.c_id = C.c_id
+                            WHERE PM.status = 'Incomplete'{order_query}
                             ''')
                 return sql.fetchall()
             elif filter == 'completed':
-                sql.execute('''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
-                            JOIN creates_mission CM ON SM.sm_id = CM.sm_id 
-                            JOIN company C ON CM.c_id = C.c_id
-                            WHERE CM.status = 'Completed'
+                sql.execute(f'''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
+                            JOIN performing_missions PM ON SM.sm_id = PM.sm_id 
+                            JOIN company C ON PM.c_id = C.c_id
+                            WHERE PM.status = 'Success' OR PM.status = 'Failure' {order_query}
                             ''')
                 return sql.fetchall()
             else:
-                return Space_Mission.getAllMissions()
+                sql.execute(f'''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
+                            JOIN creates_mission CM ON SM.sm_id = CM.sm_id 
+                            JOIN company C ON CM.c_id = C.c_id{order_query}
+                            ''')
+                return sql.fetchall()
             
     def getMissionByName(name):
         with connection.cursor() as sql:
@@ -472,6 +483,10 @@ class Space_Mission(models.Model):
     def assignAstro(sm_id, astro_id):
         with connection.cursor() as sql:
             sql.execute("INSERT INTO assigned_to (astro_id, sm_id) VALUES (%s, %s)", [astro_id, sm_id])
+
+    def fireAstro(sm_id, astro_id):
+        with connection.cursor() as sql:
+            sql.execute("DELETE FROM assigned_to WHERE astro_id=%s AND sm_id=%s", [astro_id, sm_id])
 
     def getAssignedAstronauts(sm_id):
         with connection.cursor() as sql:

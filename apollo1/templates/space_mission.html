@@ -130,6 +130,25 @@
         {% endif %}
         {%endif%}
 
+        {%if is_performer%}
+        <h2 class="text-center mt-4">Fire Astronauts from Mission</h2>
+        {% if assigned_astros %}
+        <form method="POST" action="{% url 'fire_astro' %}" class="mt-4">
+            {% csrf_token %}
+            <input type="hidden" name="mission_name" value="{{ mission.1}}">
+            <h3>Astronauts working in the mission:</h3>
+            <select name="astro_id" id="astronaut" class="form-control">
+                {% for astro in assigned_astros %}
+                    <option value="{{ astro.0 }}">Astronaut ID: {{ astro.0 }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Fire Astronaut" class="btn btn-primary mt-2">
+        </form>
+        {% else %}
+        <p class="text-center mt-4">No astronauts available.</p>
+        {% endif %}
+        {%endif%}
+
         <h1 class="text-center mt-4">Bids</h1>
         {%if bids%}
         <table class="table table-striped table-bordered mt-4">

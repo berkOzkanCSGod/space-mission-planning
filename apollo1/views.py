@@ -236,7 +236,9 @@ def space_missions(request):
     
     if request.method == 'POST':
         filter = request.POST.get('filter')
-        missions = Space_Mission.filter(filter)
+        order_field = request.POST.get('orderField')
+        order_direction = request.POST.get('orderDirection')
+        missions = Space_Mission.filter(filter, order_field, order_direction)
 
         return render(request, "space_missions.html", {'missions': missions, 'filter': filter})
 
@@ -335,7 +337,22 @@ def assign_astro(request):
         sm_id = Space_Mission.findIdByName(mission_name)
         print(sm_id)
         res = Space_Mission.assignAstro(sm_id, astro_id)
-    return HttpResponseRedirect(reverse('home'))
+    return HttpResponseRedirect(reverse('dashboard'))
+
+def fire_astro(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role') 
+    if 'user_id' not in request.COOKIES:
+        return HttpResponseRedirect(reverse('login'))
+    elif user_role != 'company':
+        return HttpResponseRedirect(reverse('home'))
+    
+    if request.method == 'POST':
+        mission_name = request.POST.get('mission_name')
+        astro_id = request.POST.get('astro_id')
+        sm_id = Space_Mission.findIdByName(mission_name)
+        res = Space_Mission.fireAstro(sm_id, astro_id)
+    return HttpResponseRedirect(reverse('dashboard'))
 
 
 
@@ -349,13 +366,18 @@ def user_missions(request):
         created_missions = Company.getCreatedMissions(user_id)
         performing_missions = Company.getPerformingMissions(user_id)
     elif user_role == 'astronaut':
-        # performing_missions = Astronaut.getPerformingMissions(user_id)
+        performing_missions = Astronaut.getPerformingMissions(user_id)
         pass
 
     if request.method == 'POST':
         return HttpResponseRedirect(reverse('home'))
     else:
-        return render(request, "user_missions.html", {'created_missions': created_missions, 'performing_missions':performing_missions})
+        if user_role == 'company':
+            return render(request, "user_missions.html", {'created_missions': created_missions, 'performing_missions':performing_missions, 'user_role': user_role})
+        elif user_role == 'astronaut':
+            return render(request, "user_missions.html", {'performing_missions':performing_missions, 'user_role': user_role})
+        else:
+            return HttpResponseRedirect(reverse('home'))
 
 
 def training_view(request):

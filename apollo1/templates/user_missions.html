@@ -19,68 +19,74 @@
     </div>
 
     <h3>Performing Missions</h3>
-    <table>
-        <tr>
-            <th>Mission ID</th>
-            <th>Mission Name</th>
-            <th>Mission Duration (Days)</th>
-            <th>Destination</th>
-            <th>Astronaut Amount</th>
-            <th>Objective</th>
-            <th>View</th>
+    {% if performing_missions %}
+        <table>
+            <tr>
+                <th>Mission ID</th>
+                <th>Mission Name</th>
+                <th>Mission Duration (Days)</th>
+                <th>Destination</th>
+                <th>Astronaut Amount</th>
+                <th>Objective</th>
+                <th>View</th>
 
-        </tr>
-    {% for mission in performing_missions %}
-        <tr>
-            <td>{{mission.0}}</td>
-            <td>{{mission.1}}</td>
-            <td>{{mission.2}}</td>
-            <td>{{mission.3}}</td>
-            <td>{{mission.4}}</td>
-            <td>{{mission.5}}</td>
-            <td>
-                <form action="{% url 'space_mission' %}" method="get">
-                    {% csrf_token %}
-                    <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.1 }}" />
-                    <button type="submit">View</button>
-                </form>
-            </td>
-            
-        </tr>
-    {% endfor %}
-    </table>
+            </tr>
+        {% for mission in performing_missions %}
+            <tr>
+                <td>{{mission.0}}</td>
+                <td>{{mission.1}}</td>
+                <td>{{mission.2}}</td>
+                <td>{{mission.3}}</td>
+                <td>{{mission.4}}</td>
+                <td>{{mission.5}}</td>
+                <td>
+                    <form action="{% url 'space_mission' %}" method="get">
+                        {% csrf_token %}
+                        <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.1 }}" />
+                        <button type="submit">View</button>
+                    </form>
+                </td>
+                
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        <p>No performing missions</p>
+    {% endif %}
 
-    <h3>Created Missions</h3>
-    <table>
-        <tr>
-            <th>Mission ID</th>
-            <th>Mission Name</th>
-            <th>Mission Duration (Days)</th>
-            <th>Destination</th>
-            <th>Astronaut Amount</th>
-            <th>Objective</th>
-            <th>View</th>
+    {% if user_role == 'company' %}
+        <h3>Created Missions</h3>
+        <table>
+            <tr>
+                <th>Mission ID</th>
+                <th>Mission Name</th>
+                <th>Mission Duration (Days)</th>
+                <th>Destination</th>
+                <th>Astronaut Amount</th>
+                <th>Objective</th>
+                <th>View</th>
 
-        </tr>
-    {% for mission in created_missions %}
-        <tr>
-            <td>{{mission.0}}</td>
-            <td>{{mission.1}}</td>
-            <td>{{mission.2}}</td>
-            <td>{{mission.3}}</td>
-            <td>{{mission.4}}</td>
-            <td>{{mission.5}}</td>
-            <td>
-                <form action="{% url 'space_mission' %}" method="get">
-                    {% csrf_token %}
-                    <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.1 }}" />
-                    <button type="submit">View</button>
-                </form>
-            </td>
-            
-        </tr>
-    {% endfor %}
-    </table>
+            </tr>
+        {% for mission in created_missions %}
+            <tr>
+                <td>{{mission.0}}</td>
+                <td>{{mission.1}}</td>
+                <td>{{mission.2}}</td>
+                <td>{{mission.3}}</td>
+                <td>{{mission.4}}</td>
+                <td>{{mission.5}}</td>
+                <td>
+                    <form action="{% url 'space_mission' %}" method="get">
+                        {% csrf_token %}
+                        <input type="hidden" id="mission_name" name="mission_name" value="{{ mission.1 }}" />
+                        <button type="submit">View</button>
+                    </form>
+                </td>
+                
+            </tr>
+        {% endfor %}
+        </table>
+    {%endif%}
 
     {% if err_msg %}
         <p style="color: red;">{{ err_msg }}</p>
