@@ -6,64 +6,117 @@
     <meta charset="UTF-8">
     <title>System Report</title>
 
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/background.css' %}">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <style>
+        body {
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="dashboard">Dashboard</a>
-        <a href="profile">Profile</a>
-        <a href="{% url 'logout' %}">Logout</a>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="dashboard">Dashboard</a>
+        <a class="navbar-brand" href="profile">Profile</a>
+        <a class="navbar-brand" href="{% url 'logout' %}">Logout</a>
+    </nav>
+
+    <div class="container bg-white rounded p-4 mt-4 mb-4">
+        <h1 class="text-center">System Report</h1>
+
+        {% if report_type == 'most_expensive_mission' or report_type == 'mission_with_most_astronauts' or report_type == 'mission_with_highest_bid' %}
+            {% if report_type == 'most_expensive_mission' %}
+                <h2>Most Expensive Mission</h2>
+            {% elif report_type == 'mission_with_most_astronauts' %}
+                <h2>Mission with Most Astronauts</h2>
+            {% elif report_type == 'mission_with_highest_bid' %}
+                <h2>Mission with Current Highest Bid</h2>
+            {% endif %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Mission ID</th>
+                        <th>Mission Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for mission in missions %}
+                    <tr>
+                        <td>{{ mission.0 }}</td>
+                        <td>{{ mission.1 }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2">No missions found.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% elif report_type == 'most_active_creator_company' or report_type == 'most_active_executor_company' %}
+            {% if report_type == 'most_active_creator_company' %}
+                <h2>Most Active Creator Company</h2>
+            {% elif report_type == 'most_active_executor_company' %}
+                <h2>Most Active Executor Company</h2>
+            {% endif %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Company ID</th>
+                        <th>Company Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for company in companies %}
+                    <tr>
+                        <td>{{ company.0 }}</td>
+                        <td>{{ company.4 }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2">No companies found.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
     </div>
 
-    <h1>System Report</h1>
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        window.onload = function() {
+            document.getElementById('sm_duration').onchange = enableOrderDirection;
+            document.getElementById('sm_astro_cnt').onchange = enableOrderDirection;
 
-    {% if report_type == 'most_expensive_mission' or report_type == 'mission_with_most_astronauts' or report_type == 'mission_with_highest_bid' %}
-        {% if report_type == 'most_expensive_mission' %}
-            <h2>Most Expensive Mission</h2>
-        {% elif report_type == 'mission_with_most_astronauts' %}
-            <h2>Mission with Most Astronauts</h2>
-        {% elif report_type == 'mission_with_highest_bid' %}
-            <h2>Mission with Highest Bid</h2>
-        {% endif %}
-        <table>
-            <tr>
-                <th>Mission ID</th>
-                <th>Mission Name</th>
-            </tr>
-            {% for mission in missions %}
-                <tr>
-                    <td>{{ mission.0 }}</td>
-                    <td>{{ mission.1 }}</td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="2">No missions found.</td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% elif report_type == 'most_active_creator_company' or report_type == 'most_active_executor_company' %}
-        {% if report_type == 'most_active_creator_company' %}
-            <h2>Most Active Creator Company</h2>
-        {% elif report_type == 'most_active_executor_company' %}
-            <h2>Most Active Executor Company</h2>
-        {% endif %}
-        <table>
-            <tr>
-                <th>Company ID</th>
-                <th>Company Name</th>
-            </tr>
-            {% for company in companies %}
-                <tr>
-                    <td>{{ company.0 }}</td>
-                    <td>{{ company.4 }}</td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="2">No companies found.</td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
+            function enableOrderDirection() {
+                document.getElementById('ASC').disabled = false;
+                document.getElementById('DESC').disabled = false;
+            }
+        }
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.width = `${randomInRange(1, 4)}px`;
+            star.style.height = star.style.width;
+            star.style.top = `${randomInRange(0, 100)}%`;
+            star.style.left = `${randomInRange(0, 100)}%`;
+            star.style.animationDuration = `${randomInRange(4, 12)}s`;
+            return star;
+        }
+
+        const numStars = 1000; // Adjust as needed
+        const body = document.querySelector('body');
+        for (let i = 0; i < numStars; i++) {
+            const star = createStar();
+            body.appendChild(star);
+        }
+    </script>
 </body>
 </html>

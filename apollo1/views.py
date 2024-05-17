@@ -114,7 +114,7 @@ def home(request):
         user_role = request.COOKIES.get('user_role')
         
         if user_id:
-            return render(request, "home.html")
+            return render(request, "home.html", {'user_id': user_id, 'user_role': user_role})
         else:
             error_message = 'You need to log in to access this page.'
             return HttpResponseRedirect(reverse('login'), {'err_msg': error_message})

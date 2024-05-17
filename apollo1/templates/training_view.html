@@ -6,45 +6,82 @@
     <meta charset="UTF-8">
     <title>User Missions</title>
 
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/background.css' %}">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/table.css' %}">
-
-
+    <style>
+        body {
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="dashboard">Dashboard</a>
-        <a href="profile">Profile</a>
-        <a href="{% url 'logout' %}">Logout</a>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="dashboard">Dashboard</a>
+        <a class="navbar-brand" href="profile">Profile</a>
+        <a class="navbar-brand" href="{% url 'logout' %}">Logout</a>
+    </nav>
+
+    <div class="container bg-white rounded p-4 mt-4 mb-4">
+        <h1 class="text-center">Astronaut's Trainings</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Training ID</th>
+                    <th>Training Name</th>
+                    <th>Training Description</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for training in astro_trainings %}
+                <tr>
+                    <td>{{training.0}}</td>
+                    <td>{{training.1}}</td>
+                    <td>{{training.2}}</td>
+                    {% if training.3 == 0 %}
+                        <td class="text-success">Passed</td>
+                    {% elif training.3 == 1 %}
+                        <td class="text-danger">Failed</td>
+                    {% else %}
+                        <td class="text-primary">Not Completed</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% if err_msg %}
+            <p class="text-danger">{{ err_msg }}</p>
+        {% endif %}
     </div>
 
-    <h1>Astronaut's Trainings</h1>
-    <table>
-        <tr>
-            <th>Training ID</th>
-            <th>Training Name</th>
-            <th>Training Description</th>
-            <th>Status</th>
-        </tr>
-    {% for training in astro_trainings %}
-        <tr>
-            <td>{{training.0}}</td>
-            <td>{{training.1}}</td>
-            <td>{{training.2}}</td>
-            {% if training.3 == 0 %}
-                <td style="color: green;">Passed</td>
-            {% elif training.3 == 1 %}
-                <td style="color: red;">Failed</td>
-            {% else %}
-                <td style="color: blue;">Not Completed</td>
-            {% endif %}
-            
-        </tr>
-    {% endfor %}
-    </table>
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
 
-    {% if err_msg %}
-        <p style="color: red;">{{ err_msg }}</p>
-    {% endif %}
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.width = `${randomInRange(1, 4)}px`;
+            star.style.height = star.style.width;
+            star.style.top = `${randomInRange(0, 100)}%`;
+            star.style.left = `${randomInRange(0, 100)}%`;
+            star.style.animationDuration = `${randomInRange(4, 12)}s`;
+            return star;
+        }
+
+        const numStars = 1000; // Adjust as needed
+        const body = document.querySelector('body');
+        for (let i = 0; i < numStars; i++) {
+            const star = createStar();
+            body.appendChild(star);
+        }
+    </script>
 </body>
 </html>

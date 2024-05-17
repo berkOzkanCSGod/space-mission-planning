@@ -119,7 +119,7 @@
             <select name="astro_id" id="astronaut" class="form-control">
                 {% for astro in company_astros %}
                 {% if astro not in assigned_astros %}
-                    <option value="{{ astro.0 }}">Astronaut ID: {{ astro.0 }}</option>
+                    <option value="{{ astro.0 }}">Astronaut ID: {{ astro.0 }}, Astronaut Email: {{ astro.1 }}</option>
                 {% endif %}
                 {% endfor %}
             </select>
@@ -139,7 +139,7 @@
             <h3>Astronauts working in the mission:</h3>
             <select name="astro_id" id="astronaut" class="form-control">
                 {% for astro in assigned_astros %}
-                    <option value="{{ astro.0 }}">Astronaut ID: {{ astro.0 }}</option>
+                    <option value="{{ astro.0 }}">Astronaut ID: {{ astro.0 }}, Astronaut Email: {{ astro.1 }}</option>
                 {% endfor %}
             </select>
             <input type="submit" value="Fire Astronaut" class="btn btn-primary mt-2">

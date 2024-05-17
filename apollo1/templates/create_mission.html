@@ -6,59 +6,93 @@
     <meta charset="UTF-8">
     <title>Create Mission</title>
 
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/background.css' %}">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-
-
+    <style>
+        body {
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="dashboard">Dashboard</a>
-        <a href="profile">Profile</a>
-        <a href="{% url 'logout' %}">Logout</a>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="dashboard">Dashboard</a>
+        <a class="navbar-brand" href="profile">Profile</a>
+        <a class="navbar-brand" href="{% url 'logout' %}">Logout</a>
+    </nav>
+
+    <div class="container bg-white rounded p-4 mt-4 mb-4">
+        <h1 class="text-center">Create Space Mission</h1>
+
+        <form action= "{% url 'create_mission'%}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="sm_name-input">Name</label>
+                <input type="text" id="sm_name-input" name="sm_name-input" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="sm_destination-input">Destination</label>
+                <input type="text" id="sm_destination-input" name="sm_destination-input" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="sm_duration-input">Duration (days)</label>
+                <input type="number" id="sm_duration-input" name="sm_duration-input" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="sm_astro_cnt-input">Astronaut Count</label>
+                <input type="number" id="sm_astro_cnt-input" name="sm_astro_cnt-input" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="sm_objective-input">Objective</label>
+                <input type="text" id="sm_objective-input" name="sm_objective-input" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="sites">Launch Sites</label>
+                <select id="dropdown" name="sites" class="form-control">
+                    {% for item in launch_sites %}
+                        <option value="{{ item.1 }}">{{ item.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="date-input">Date</label>
+                <input type="date" id="date-input" name="date-input" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+
+        {% if err_msg %}
+        <p class="text-danger">{{ err_msg }}</p>
+        {% endif %}
     </div>
-    <h1>Create Space Mission</h1>
 
-    <form action= "{% url 'create_mission'%}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="sm_name-input">Name</label>
-            <input type="text" id="sm_name-input" name="sm_name-input">
-        </div>
-        <div class="form-group">
-            <label for="sm_destination-input">Destination</label>
-            <input type="text" id="sm_destination-input" name="sm_destination-input">
-        </div>
-        <div class="form-group">
-            <label for="sm_duration-input">Duration (days)</label>
-            <input type="number" id="sm_duration-input" name="sm_duration-input">
-        </div>
-        <div class="form-group">
-            <label for="sm_astro_cnt-input">Astronaut Count</label>
-            <input type="number" id="sm_astro_cnt-input" name="sm_astro_cnt-input">
-        </div>
-        <div class="form-group">
-            <label for="sm_objective-input">Objective</label>
-            <input type="text" id="sm_objective-input" name="sm_objective-input">
-        </div>
-        <div class="form-group">
-            <label for="sites">Launch Sites</label>
-            <select id="dropdown" name="sites">
-                {% for item in launch_sites %}
-                    <option value="{{ item.1 }}">{{ item.1 }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="date-input">Date</label>
-            <input type="date" id="date-input" name="date-input">
-        </div>
-        <button type="submit">Create</button>
-    </form>
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
 
-    {% if err_msg %}
-    <p style="color: red;">{{ err_msg }}</p>
-    {% endif %}
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.width = `${randomInRange(1, 4)}px`;
+            star.style.height = star.style.width;
+            star.style.top = `${randomInRange(0, 100)}%`;
+            star.style.left = `${randomInRange(0, 100)}%`;
+            star.style.animationDuration = `${randomInRange(4, 12)}s`;
+            return star;
+        }
 
-
+        const numStars = 1000; // Adjust as needed
+        const body = document.querySelector('body');
+        for (let i = 0; i < numStars; i++) {
+            const star = createStar();
+            body.appendChild(star);
+        }
+    </script>
 </body>
 </html>

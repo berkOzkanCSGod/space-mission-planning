@@ -4,27 +4,60 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <title>Your Title</title>
 
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/background.css' %}">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-
+    <style>
+        body {
+            min-height: 100vh;
+        }
+    </style>
 
 </head>
 <body>
-    <div class="navbar">
-        <a href="dashboard">Dashboard</a>
-        <a href="profile">Profile</a>
-        <a href="{% url 'logout' %}">Logout</a>
-    </div>
-    <h1>Home page</h1>
-    <ul>
-        {% comment %} {% for item in users %}
-            <li>{{ item.username }} - {{ item.password }}</li>
-        {% endfor %} {% endcomment %}
-    </ul>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="dashboard">Dashboard</a>
+        <a class="navbar-brand" href="profile">Profile</a>
+        <a class="navbar-brand" href="{% url 'logout' %}">Logout</a>
+    </nav>
+    <div class="container rounded p-4 mt-4 mb-4">
+        <h1 class="text-center" style="color: white;">Welcome, {{ user_role }} {{ user_id }}</h1>
 
-    {% if err_msg %}
-        <p style="color: red;">{{ err_msg }}</p>
-    {% endif %}
+        <!-- Your content goes here -->
+
+        {% if err_msg %}
+            <p class="text-danger mt-4">{{ err_msg }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.width = `${randomInRange(1, 4)}px`;
+            star.style.height = star.style.width;
+            star.style.top = `${randomInRange(0, 100)}%`;
+            star.style.left = `${randomInRange(0, 100)}%`;
+            star.style.animationDuration = `${randomInRange(4, 12)}s`;
+            return star;
+        }
+
+        const numStars = 1000; // Adjust as needed
+        const body = document.querySelector('body');
+        for (let i = 0; i < numStars; i++) {
+            const star = createStar();
+            body.appendChild(star);
+        }
+    </script>
 </body>
 </html>

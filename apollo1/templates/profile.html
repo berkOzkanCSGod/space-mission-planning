@@ -5,115 +5,127 @@
 <head>
     <meta charset="UTF-8">
     <title>Profile</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/profile.css' %}"> 
+    <link rel="stylesheet" href="{% static 'css/background.css' %}"> 
+    <style>
+        body {
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="dashboard">Dashboard</a>
-        <a href="profile">Profile</a>
-        <a href="{% url 'logout' %}">Logout</a>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="dashboard">Dashboard</a>
+        <a class="navbar-brand" href="profile">Profile</a>
+        <a class="navbar-brand" href="{% url 'logout' %}">Logout</a>
+    </nav>
+
+    <div class="container bg-white rounded p-4 mt-4 mb-4">
+        <h1 class="text-center">User Profile</h1>
+        {% if error_message %}
+            <p class="text-danger">{{ error_message }}</p>
+        {% endif %}
+        <h2>User Information</h2>
+        {% if role == "admin" %}
+            <h3>Email: {{profile.admin_email}}</h3>
+        {%elif role == "astronaut"%}
+            <h3>Email: {{profile.astro_email}}</h3>
+            <form action="{% url 'update_field' %}?field=astro_name" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <lable for="input">Name</label>
+                    <input type="text" id="input" name="input" value={{profile.astro_name}}>
+                    <button type="submit">Update</button>
+                </div>
+            </form>
+            <form action="{% url 'update_field' %}?field=astro_age" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <lable for="input">Age</label>
+                    <input type="text" id="input" name="input" value={{profile.astro_age}}>
+                    <button type="submit">Update</button>
+                </div>
+            </form>
+            <form action="{% url 'update_field' %}?field=astro_height" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="height">Height</label>
+                    <input type="text" id="input" name="input" value="{{ profile.astro_height }}">
+                    <button type="submit">Update</button>
+                </div>
+            </form>
+            
+            <form action="{% url 'update_field' %}?field=astro_weight" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="weight">Weight</label>
+                    <input type="text" id="input" name="input" value="{{ profile.astro_weight }}">
+                    <button type="submit">Update</button>
+                </div>
+            </form>
+            
+            <form action="{% url 'update_field' %}?field=astro_experience" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="experience">Experience</label>
+                    <select id="input" name="input" >
+                        <option value="JR" {% if profile.astro_experience == 'JR' %}selected{% endif %}>JR</option>
+                        <option value="SR" {% if profile.astro_experience == 'SR' %}selected{% endif %}>SR</option>
+                        <option value="GM" {% if profile.astro_experience == 'GM' %}selected{% endif %}>GM</option>
+                    </select>
+                    <button type="submit">Update</button>
+                </div>
+            </form>
+            <form action="{% url 'update_field' %}?field=astro_nationality" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="nationality">Nationality</label>
+                    <input type="text" id="input" name="input" value="{{ profile.astro_nationality }}">
+                    <button type="submit">Update</button>
+                </div>
+            </form>    
+        {% elif role == "company" %}
+            <h3>Email: {{profile.c_email}}</h3>
+            <form action="{% url 'update_field' %}?field=c_name" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="input">Name</label>
+                    <input type="text" id="input" name="input" value={{profile.c_name}}>
+                    <button type="submit">Update</button>
+                </div>
+            </form> 
+            <form action="{% url 'update_field' %}?field=c_emply_cnt" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="input">Employee Count</label>
+                    <input type="text" id="input" name="input" value="{{ profile.c_emply_cnt }}">
+                    <button type="submit">Update</button>
+                </div>
+            </form>
+            <form action="{% url 'update_field' %}?field=c_country_origin" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="input">Country of Origin</label>
+                    <input type="text" id="input" name="input" value="{{ profile.c_country_origin }}">
+                    <button type="submit">Update</button>
+                </div>
+            </form>
+
+            <div class="bank-accounts">
+                <h2>Bank Accounts</h2>
+                <a href="{% url 'get_bank_account' %}" class="button">View Bank Accounts</a>
+            </div>
+        {% endif %}
+
+
     </div>
 
-    {% if error_message %}
-        <p style="color: red;">{{ error_message }}</p>
-    {% endif %}
-
-    {% if role == "admin" %}
-        <h1>{{profile.admin_email}}</h1>
-    {%elif role == "astronaut"%}
-        <h1>{{profile.astro_email}}</h1>
-        <form action="{% url 'update_field' %}?field=astro_name" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <lable for="input">Name</label>
-                <input type="text" id="input" name="input" value={{profile.astro_name}}>
-                <button type="submit">Update</button>
-            </div>
-        </form>
-        <form action="{% url 'update_field' %}?field=astro_age" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <lable for="input">Age</label>
-                <input type="text" id="input" name="input" value={{profile.astro_age}}>
-                <button type="submit">Update</button>
-            </div>
-        </form>
-        <form action="{% url 'update_field' %}?field=astro_height" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="height">Height</label>
-                <input type="text" id="input" name="input" value="{{ profile.astro_height }}">
-                <button type="submit">Update</button>
-            </div>
-        </form>
-        
-        <form action="{% url 'update_field' %}?field=astro_weight" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="weight">Weight</label>
-                <input type="text" id="input" name="input" value="{{ profile.astro_weight }}">
-                <button type="submit">Update</button>
-            </div>
-        </form>
-        
-        <form action="{% url 'update_field' %}?field=astro_experience" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="experience">Experience</label>
-                <select id="input" name="input" >
-                    <option value="JR" {% if profile.astro_experience == 'JR' %}selected{% endif %}>JR</option>
-                    <option value="SR" {% if profile.astro_experience == 'SR' %}selected{% endif %}>SR</option>
-                    <option value="GM" {% if profile.astro_experience == 'GM' %}selected{% endif %}>GM</option>
-                </select>
-                <button type="submit">Update</button>
-            </div>
-        </form>
-        <form action="{% url 'update_field' %}?field=astro_nationality" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="nationality">Nationality</label>
-                <input type="text" id="input" name="input" value="{{ profile.astro_nationality }}">
-                <button type="submit">Update</button>
-            </div>
-        </form>        
-    {% elif role == "company" %}
-        <h1>{{profile.c_email}}</h1>
-        <form action="{% url 'update_field' %}?field=c_name" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="input">Name</label>
-                <input type="text" id="input" name="input" value={{profile.c_name}}>
-                <button type="submit">Update</button>
-            </div>
-        </form> 
-        <form action="{% url 'update_field' %}?field=c_emply_cnt" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="input">Employee Count</label>
-                <input type="text" id="input" name="input" value="{{ profile.c_emply_cnt }}">
-                <button type="submit">Update</button>
-            </div>
-        </form>
-        <form action="{% url 'update_field' %}?field=c_country_origin" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="input">Country of Origin</label>
-                <input type="text" id="input" name="input" value="{{ profile.c_country_origin }}">
-                <button type="submit">Update</button>
-            </div>
-        </form>
-
-        <div class="bank-accounts">
-            <h2>Bank Accounts</h2>
-            <a href="{% url 'get_bank_account' %}" class="button">View Bank Accounts</a>
-        </div>
-    {% endif %}
-
-    <div class="logout">
-        <a href="{% url 'logout' %}">Logout</a>
-    </div>
-
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
         function updateField(fieldName) {
             var inputValue = prompt("Enter new value for " + fieldName);
@@ -121,6 +133,29 @@
                 document.getElementById(fieldName + "-input").value = inputValue;
                 document.getElementById(fieldName + "-form").submit();
             }
+        }
+    </script>
+    <script>
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.width = `${randomInRange(1, 4)}px`;
+            star.style.height = star.style.width;
+            star.style.top = `${randomInRange(0, 100)}%`;
+            star.style.left = `${randomInRange(0, 100)}%`;
+            star.style.animationDuration = `${randomInRange(4, 12)}s`;
+            return star;
+        }
+
+        const numStars = 1000; // Adjust as needed
+        const body = document.querySelector('body');
+        for (let i = 0; i < numStars; i++) {
+            const star = createStar();
+            body.appendChild(star);
         }
     </script>
 </body>
