@@ -446,18 +446,6 @@ def make_transaction(request):
         return HttpResponseRedirect(reverse('home'))
 
 
-def get_all_transactions(request):
-    user_id = request.COOKIES.get('user_id')
-    user_role = request.COOKIES.get('user_role')
-    if 'user_id' not in request.COOKIES:
-        return HttpResponseRedirect(reverse('login'))
-    if user_role == 'company':
-        transactions = Transaction.getTransactions(user_id)
-        return render(request, "transactions.html", {'transactions': transactions})
-    else:
-        return HttpResponseRedirect(reverse('home'))
-
-
 def get_filtered_transactions(request):
     user_id = request.COOKIES.get('user_id')
     user_role = request.COOKIES.get('user_role')
@@ -481,6 +469,13 @@ def get_filtered_transactions(request):
 
     # Retrieve transactions based on filters
     transactions = Transaction.getFilteredTransactions(user_id, date, amount_less_than, amount_greater_than)
-
+    print(transactions)
+    # add company name to each transaction
+    updated_transactions = []
+    for t in transactions:
+        sender_name = Bank_Account.getCompanyNameById(t[1])
+        receiver_name = Bank_Account.getCompanyNameById(t[2])
+        updated_transactions.append((t[0], sender_name, receiver_name, t[3], t[4]))
+    print(updated_transactions)
     # Render the transactions to the template
-    return render(request, "transactions.html", {'transactions': transactions})
+    return render(request, "transactions.html", {'transactions': updated_transactions})

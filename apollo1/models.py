@@ -265,6 +265,7 @@ class Company(models.Model):
             else:
                 return None
 
+
     @classmethod
     def updateAttribute(cls, id, field, input):
         with connection.cursor() as sql:
@@ -570,6 +571,20 @@ class Bank_Account(models.Model):
             account = sql.fetchone()
             return account
 
+    def getCompanyNameById(id):
+        with connection.cursor() as sql:
+            # use owns table to get the company id
+            sql.execute("SELECT c_id FROM owns WHERE bank_id=%s", [id])
+            res = sql.fetchone()
+            if res is None:
+                return None
+            # use company table to get the company name
+            sql.execute("SELECT c_name FROM company WHERE c_id=%s", [res[0]])
+            res = sql.fetchone()
+            if res is None:
+                return None
+            return res[0]
+
     def updateBalance(bank_id, amount):
         with connection.cursor() as sql:
             balance = Bank_Account.getBalance(bank_id)
@@ -608,12 +623,6 @@ class Transaction(models.Model):
                 return True
             else:
                 return False
-
-    def getTransactions(c_id):
-        with connection.cursor() as sql:
-            bank_id = Bank_Account.getBankAccountId(c_id)
-            sql.execute("SELECT * FROM transaction WHERE receiver_id=%s OR sender_id=%s", [bank_id, bank_id])
-            return sql.fetchall()
 
     def getFilteredTransactions(c_id, date=None, amount_less_than=None, amount_greater_than=None):
         with connection.cursor() as sql:
