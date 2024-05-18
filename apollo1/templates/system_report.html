@@ -39,6 +39,9 @@
                     <tr>
                         <th>Mission ID</th>
                         <th>Mission Name</th>
+                        {% if report_type == 'mission_with_most_astronauts' %}
+                            <th>Astronaut Count</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -46,6 +49,9 @@
                     <tr>
                         <td>{{ mission.0 }}</td>
                         <td>{{ mission.1 }}</td>
+                        {% if report_type == 'mission_with_most_astronauts' %}
+                            <td>{{ mission.4 }}</td>
+                        {% endif %}
                     </tr>
                 {% empty %}
                     <tr>
