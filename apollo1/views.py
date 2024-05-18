@@ -75,9 +75,8 @@ def signup(request):
             else:
                 error_message = 'Invalid username or password.'
                 return render(request, 'signup.html', {'err_msg': error_message})
-        elif role == 'company':
+        elif role == 'organization':
             user = Company.createComp(email, password)
-            
             if user is not None:
                 response = HttpResponseRedirect(reverse('home'))
                 response.set_cookie('user_id', user.c_id)
@@ -259,13 +258,14 @@ def space_mission(request):
         c_id = request.POST.get('company_id')
         mission = Space_Mission.getMissionByName(mission_name)
         sm_id = Space_Mission.findIdByName(mission_name)
-        print('cid:', c_id)
         if c_id:
-            Space_Mission.acceptBid(sm_id, c_id)
+            # check if the company is the creator of the mission
+            if int(c_id) == int(user_id):
+                return HttpResponseRedirect(reverse('home'))
+            Space_Mission.acceptBid(sm_id, c_id, user_id)
         status = request.POST.get('status')
         if status:
-            Space_Mission.updateStatus(sm_id,status)
-
+            Space_Mission.updateStatus(sm_id, status)
 
     mission = Space_Mission.getMissionByName(mission_name)
     sm_id = Space_Mission.findIdByName(mission_name)
@@ -309,7 +309,7 @@ def place_bid(request):
     elif user_role == 'astronaut':
         return HttpResponseRedirect(reverse('home'))
     
-    #additional checks
+    # additional checks
 
     mission_name = request.GET.get('mission_name')
 

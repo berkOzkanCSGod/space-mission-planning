@@ -70,6 +70,7 @@ class Astronaut(models.Model):
                 sql.execute("INSERT INTO Astronaut (astro_email, astro_password) VALUES (%s, %s)", [aemail, apassword])
                 sql.execute("SELECT * FROM astronaut WHERE astro_email=%s", [aemail])
                 res = sql.fetchone()
+                print("res:", res)
                 astro_user = cls(
                     astro_id=res[0], 
                     astro_email=res[1],
@@ -81,7 +82,9 @@ class Astronaut(models.Model):
                     astro_weight=res[7],
                     astro_experience=res[8],
                     astro_nationality=res[9]
-                )    
+                )
+                print("here")
+                print("astro_user:", astro_user)
                 return astro_user        
             return res
 
@@ -197,6 +200,7 @@ class Company(models.Model):
                 sql.execute("INSERT INTO Company (c_email, c_password) VALUES (%s, %s)", [cemail, cpassword])
                 sql.execute("SELECT * FROM Company WHERE c_email=%s", [cemail])
                 res = sql.fetchone()
+                print("res:", res)
                 comp_user = cls(
                     c_id=res[0],
                     c_email=res[1],
@@ -208,11 +212,11 @@ class Company(models.Model):
                 )    
 
                 # create bank account for the company
-                sql.execute("INSERT INTO Bank_Account DEFAULT VALUES RETURNING bank_id")
+                # sql.execute("INSERT INTO Bank_Account DEFAULT VALUES RETURNING bank_id")
                 # sql.execute("SELECT LAST_INSERT_ID()")
-                bank_id = sql.fetchone()[0]
-                sql.execute("INSERT INTO owns (bank_id, c_id) VALUES (%s, %s)", [bank_id, comp_user.c_id])
-
+                # bank_id = sql.fetchone()[0]
+                # sql.execute("INSERT INTO owns (bank_id, c_id) VALUES (%s, %s)", [bank_id, comp_user.c_id])
+                print("comp_user:", comp_user)
                 return comp_user        
             return res
 
@@ -452,10 +456,39 @@ class Space_Mission(models.Model):
             sql.execute("INSERT INTO bids (sm_id, c_id, amount) VALUES (%s, %s, %s)", [sm_id, c_id, amount])
             return None
 
-    def acceptBid(sm_id, c_id):
+    def acceptBid(sm_id, c_id, user_id):
         with connection.cursor() as sql:
-            sql.execute("INSERT INTO performing_missions (c_id, sm_id) VALUES (%s,%s)", [c_id, sm_id])
-
+            # check if the company has enough balance
+            sql.execute("SELECT * FROM bids WHERE sm_id=%s AND c_id=%s", [sm_id, c_id])
+            res = sql.fetchone()
+            # get the company bank account from owns table
+            sql.execute("SELECT * FROM owns WHERE c_id=%s", [c_id])
+            res1 = sql.fetchone()
+            sql.execute("SELECT * FROM owns WHERE c_id=%s", [user_id])
+            res2 = sql.fetchone()
+            if res is None or res1 is None:
+                return False
+            bidder_bank_id = res1[0]
+            user_bank_id = res2[0]
+            bid_amount = res[2]
+            # get the bank_account_numbers of the companies for the transaction
+            sql.execute("SELECT * FROM bank_account WHERE bank_id=%s", [bidder_bank_id])
+            res = sql.fetchone()
+            bidder_bank_account_number = res[3]
+            sql.execute("SELECT * FROM bank_account WHERE bank_id=%s", [user_bank_id])
+            res = sql.fetchone()
+            user_bank_account_number = res[3]
+            # create transaction
+            success = Transaction.createTransaction(bidder_bank_account_number, user_bank_account_number, bid_amount)
+            # if transaction is successful, insert into performing_missions
+            if success:
+                sql.execute("INSERT INTO performing_missions (c_id, sm_id) VALUES (%s,%s)", [c_id, sm_id])
+                return True
+            else:
+                # delete the bid because transaction failed
+                sql.execute("DELETE FROM bids WHERE sm_id=%s AND c_id=%s", [sm_id, c_id])
+                return False
+    
     def updateStatus(sm_id, status):
         with connection.cursor() as sql:
             sql.execute("UPDATE performing_missions SET status = %s WHERE sm_id = %s", [status, sm_id])

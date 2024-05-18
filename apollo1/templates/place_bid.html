@@ -20,12 +20,14 @@
     <h1>Place Bid</h1>
     <table>
         <tr>
+            <th>ID</th>
             <th>Name</th>
             <th>Duration</th>
             <th>Destination</th>
             <th>Astro Count</th>
         </tr>
         <tr>
+            <td>{{mission.0}}</td>
             <td>{{mission.1}}</td>
             <td>{{mission.2}}</td>
             <td>{{mission.3}}</td>
@@ -36,7 +38,7 @@
     <form action="{% url 'place_bid' %}" method="post">
         {% csrf_token %}
         <label for="bid_amount">Bid: </label>
-        <input type="hidden" name="mission_id" value="{{mission.id}}">
+        <input type="hidden" id="mission_id" name="mission_id" value="{{ mission.0 }}">
         <input type="number" step="0.01" name="bid_amount">
         <button type="submit">Bid</button>
     </form>
