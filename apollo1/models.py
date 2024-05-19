@@ -13,7 +13,7 @@ class Admin(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM admin WHERE admin_email=%s", [email])
             res = sql.fetchone()
-
+            connection.commit()
             if res is not None:
                 admin_user = cls(
                     admin_id=res[0],
@@ -34,7 +34,7 @@ class Admin(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM admin WHERE admin_id=%s", [id])
             res = sql.fetchone()
-
+            connection.commit()
             if res:
                 admin_user = cls(
                     admin_id=res[0],
@@ -65,11 +65,12 @@ class Astronaut(models.Model):
             res = sql.fetchone()
             sql.execute("SELECT * FROM Company WHERE c_email = %s", [aemail])
             res1 = sql.fetchone()
-
+            connection.commit()
             if res is None and res1 is None:
                 sql.execute("INSERT INTO Astronaut (astro_email, astro_password) VALUES (%s, %s)", [aemail, apassword])
                 sql.execute("SELECT * FROM astronaut WHERE astro_email=%s", [aemail])
                 res = sql.fetchone()
+                connection.commit()
                 astro_user = cls(
                     astro_id=res[0], 
                     astro_email=res[1],
@@ -91,7 +92,7 @@ class Astronaut(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM astronaut WHERE astro_email=%s", [email])
             res = sql.fetchone()
-
+            connection.commit()
             if res is not None:
                 astro_user = cls(
                     astro_id=res[0], 
@@ -120,6 +121,7 @@ class Astronaut(models.Model):
             comp = sql.fetchone()
             sql.execute("SELECT * FROM admin WHERE admin_email=%s", [email])
             admin = sql.fetchone()
+            connection.commit()
             if astro is not None:
                 return 'astronaut'
             elif comp is not None:
@@ -133,6 +135,7 @@ class Astronaut(models.Model):
     def getAstronautTrainings(cls, id):
         with connection.cursor() as sql:
             sql.execute("SELECT T.t_id, T.t_name, T.t_description, C.status FROM training T, completes C WHERE C.astro_id=%s AND C.t_id = T.t_id ORDER BY T.t_id ASC", [id])
+            connection.commit()
             return sql.fetchall()
 
     @classmethod
@@ -154,6 +157,7 @@ class Astronaut(models.Model):
                     astro_experience=res[8],
                     astro_nationality=res[9]
                 )
+                connection.commit()
                 return astro_user
             else:
                 return None
@@ -164,13 +168,14 @@ class Astronaut(models.Model):
             sql.execute("UPDATE astronaut SET {} = %s WHERE astro_id = %s".format(field), [input, id])
             res = sql.rowcount > 0
             if res:
+                connection.commit()
                 return True
-
         return False
     
     def getPerformingMissions(id):
         with connection.cursor() as sql:
             sql.execute("SELECT SM.sm_id, SM.sm_name, SM.sm_duration, SM.sm_destination, SM.sm_astro_cnt, SM.sm_objective FROM assigned_to AT JOIN space_mission SM ON AT.sm_id = SM.sm_id AND AT.astro_id = %s", [id])
+            connection.commit()
             return sql.fetchall()
 
 
@@ -206,7 +211,7 @@ class Company(models.Model):
                     c_emply_cnt=res[5],
                     c_country_origin=res[6]
                 )    
-
+                connection.commit()
                 return comp_user        
             return res
 
@@ -216,7 +221,7 @@ class Company(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM company WHERE c_email=%s", [email])
             res = sql.fetchone()
-
+            connection.commit()
             if res is not None:
                 comp_user = cls(
                     c_id=res[0],
@@ -240,7 +245,7 @@ class Company(models.Model):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM company WHERE c_id=%s", [id])
             res = sql.fetchone()
-
+            connection.commit()
             if res:
                 comp_user = cls(
                     c_id=res[0],
@@ -262,6 +267,7 @@ class Company(models.Model):
             sql.execute("UPDATE company SET {} = %s WHERE c_id = %s".format(field), [input, id])
             res = sql.rowcount > 0
             if res:
+                connection.commit()
                 return True
 
         return False
@@ -269,26 +275,31 @@ class Company(models.Model):
     def getCreatedMissions(id):
         with connection.cursor() as sql:
             sql.execute("SELECT SM.sm_id, SM.sm_name, SM.sm_duration, SM.sm_destination, SM.sm_astro_cnt, SM.sm_objective FROM creates_mission CM JOIN Space_Mission SM ON CM.sm_id = SM.sm_id AND CM.c_id = %s", [id])
+            connection.commit()
             return sql.fetchall()
 
     def getPerformingMissions(id):
         with connection.cursor() as sql:
             sql.execute("SELECT SM.sm_id, SM.sm_name, SM.sm_duration, SM.sm_destination, SM.sm_astro_cnt, SM.sm_objective FROM performing_missions PM JOIN Space_Mission SM ON PM.sm_id = SM.sm_id AND PM.c_id = %s", [id])
+            connection.commit()
             return sql.fetchall()
 
     def getMostActiveCreatorCompany():
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM company WHERE c_id = (SELECT c_id FROM creates_mission GROUP BY c_id ORDER BY COUNT(sm_id) DESC LIMIT 1)")
+            connection.commit()
             return sql.fetchall()
 
     def getMostActiveExecutorCompany():
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM company WHERE c_id = (SELECT c_id FROM performing_missions GROUP BY c_id ORDER BY COUNT(sm_id) DESC LIMIT 1)")
+            connection.commit()
             return sql.fetchall()
         
     def getAstronauts(id):
         with connection.cursor() as sql:
             sql.execute("SELECT * from astronaut WHERE astro_id IN (SELECT WF.astro_id FROM works_for WF WHERE WF.c_id = %s)", [id])
+            connection.commit()
             return sql.fetchall()
         
     def getTrainedAstronauts(sm_id, c_id):
@@ -307,6 +318,7 @@ class Company(models.Model):
                 GROUP BY A.astro_id
                 HAVING COUNT(DISTINCT R.t_id) = (SELECT COUNT(DISTINCT t_id) FROM required WHERE sm_id = %s)
                 """, [c_id, sm_id, sm_id])
+                connection.commit()
                 return sql.fetchall()
 
 
@@ -318,8 +330,9 @@ class Launch_Site(models.Model):
     @classmethod 
     def isAvailable(cls, id, time):
         with connection.cursor() as sql:
-            sql.execute("SELECT * FROM uses WHERE launch_time=%s AND ls_id=%s",[time,id])
+            sql.execute("SELECT * FROM uses WHERE launch_time=%s AND ls_id=%s", [time, id])
             res = sql.fetchone()
+            connection.commit()
             if res is not None:
                 return False
             
@@ -333,12 +346,12 @@ class Space_Mission(models.Model):
     sm_destination = models.CharField(max_length=50)
     sm_astro_cnt = models.IntegerField(default=1)
     sm_objective = models.TextField()
-
     
     def createMission(c_id, name, dest, duration, astroCnt, objective, launchSite, launchTime):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM launch_site WHERE ls_location=%s",[launchSite])
             res = sql.fetchone()
+            connection.commit()
             ls = Launch_Site(
                 ls_id=res[0],
                 ls_location=res[1],
@@ -350,24 +363,26 @@ class Space_Mission(models.Model):
                 return None
 
             sql.execute("INSERT INTO space_mission (sm_name, sm_duration, sm_destination, sm_astro_cnt, sm_objective) VALUES (%s, %s, %s, %s, %s)", [name, duration, dest, astroCnt, objective])
-            sql.execute("SELECT * FROM space_mission WHERE sm_name=%s",[name])
+            sql.execute("SELECT * FROM space_mission WHERE sm_name=%s", [name])
             res = sql.fetchone()
 
             mission_id = res[0]
 
             sql.execute("INSERT INTO uses (ls_id, sm_id, launch_time) VALUES (%s, %s, %s)", [ls.ls_id, mission_id, launchTime])
             sql.execute("INSERT INTO creates_mission (c_id, sm_id) VALUES (%s, %s)", [c_id, mission_id])
-
+            connection.commit()
             return True
 
     def getLaunchSites():
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM launch_site")
+            connection.commit()
             return sql.fetchall()
         
     def getAllMissions():
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM allmissions")
+            connection.commit()
             return sql.fetchall()
         
     def filter(filter, order_field, order_direction):
@@ -380,6 +395,7 @@ class Space_Mission(models.Model):
                             JOIN company C ON CM.c_id = C.c_id
                             WHERE CM.status = 'Bidding'{order_query}
                             ''')
+                connection.commit()
                 return sql.fetchall()
             elif filter == 'in_progress':
                 sql.execute(f'''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
@@ -387,6 +403,7 @@ class Space_Mission(models.Model):
                             JOIN company C ON PM.c_id = C.c_id
                             WHERE PM.status = 'Incomplete'{order_query}
                             ''')
+                connection.commit()
                 return sql.fetchall()
             elif filter == 'completed':
                 sql.execute(f'''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
@@ -394,28 +411,33 @@ class Space_Mission(models.Model):
                             JOIN company C ON PM.c_id = C.c_id
                             WHERE PM.status = 'Success' OR PM.status = 'Failure' {order_query}
                             ''')
+                connection.commit()
                 return sql.fetchall()
             else:
                 sql.execute(f'''SELECT sm_name, sm_duration, sm_destination, sm_astro_cnt, c_name, c_country_origin FROM space_mission SM 
                             JOIN creates_mission CM ON SM.sm_id = CM.sm_id 
                             JOIN company C ON CM.c_id = C.c_id{order_query}
                             ''')
+                connection.commit()
                 return sql.fetchall()
             
     def getMissionByName(name):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM space_mission WHERE sm_name=%s", [name])
+            connection.commit()
             return sql.fetchone()
     
     def getMissionById(sm_id):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM space_mission WHERE sm_id=%s", [sm_id])
+            connection.commit()
             return sql.fetchone()
 
     def findIdByName(name):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM space_mission WHERE sm_name=%s", [name])
             row = sql.fetchone()
+            connection.commit()
             if row:
                 return row[0]
             else:
@@ -428,22 +450,25 @@ class Space_Mission(models.Model):
                             FROM creates_mission
                             WHERE sm_id=%s       
                         ''', [sm_id])
+            connection.commit()
             return sql.fetchone()[0]
 
     def findBids(sm_id):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM bids WHERE sm_id=%s", [sm_id])
+            connection.commit()
             return sql.fetchall()
 
     def findPerformingMission(sm_id):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM performing_missions WHERE sm_id=%s", [sm_id])
+            connection.commit()
             return sql.fetchone()
         
     def placeBid(sm_id, c_id, amount):
         with connection.cursor() as sql:
             # do checks for balance etc., etc.,
-
+            connection.commit()
             sql.execute("INSERT INTO bids (sm_id, c_id, amount) VALUES (%s, %s, %s)", [sm_id, c_id, amount])
             return None
 
@@ -468,53 +493,64 @@ class Space_Mission(models.Model):
             bidder_bank_account_number = res[3]
             sql.execute("SELECT * FROM bank_account WHERE bank_id=%s", [user_bank_id])
             res = sql.fetchone()
+            connection.commit()
             user_bank_account_number = res[3]
             # create transaction
             success = Transaction.createTransaction(bidder_bank_account_number, user_bank_account_number, bid_amount)
             # if transaction is successful, insert into performing_missions
             if success:
                 sql.execute("INSERT INTO performing_missions (c_id, sm_id) VALUES (%s,%s)", [c_id, sm_id])
+                connection.commit()
                 return True
             else:
                 # delete the bid because transaction failed
                 sql.execute("DELETE FROM bids WHERE sm_id=%s AND c_id=%s", [sm_id, c_id])
+                connection.commit()
                 return False
     
     def updateStatus(sm_id, status):
         with connection.cursor() as sql:
             sql.execute("UPDATE performing_missions SET status = %s WHERE sm_id = %s", [status, sm_id])
+            connection.commit()
 
     def getRequiredTrainings(id):
         with connection.cursor() as sql:
             sql.execute("SELECT T.t_id, T.t_name, T.t_description FROM training T, required R WHERE R.sm_id=%s AND R.t_id = T.t_id ORDER BY T.t_id ASC", [id])
+            connection.commit()
             return sql.fetchall()
 
     def getMostExpensiveMission(): 
         with connection.cursor() as sql:
             sql.execute("SELECT SM.* FROM space_mission SM, (SELECT B.sm_id FROM bids B, performing_missions PM WHERE PM.sm_id = B.sm_id GROUP BY B.sm_id ORDER BY MAX(B.amount) DESC LIMIT 1) AS T WHERE SM.sm_id = T.sm_id")
+            connection.commit()
             return sql.fetchall()
 
     def getMissionWithMostAstronauts():
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM space_mission WHERE sm_astro_cnt = (SELECT MAX(sm_astro_cnt) FROM space_mission)")
+            connection.commit()
             return sql.fetchall()
 
     def getMissionWithHighestBid():
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM space_mission WHERE sm_id = (SELECT sm_id FROM bids GROUP BY sm_id ORDER BY MAX(amount) DESC LIMIT 1)")
+            connection.commit()
             return sql.fetchall()
         
     def assignAstro(sm_id, astro_id):
         with connection.cursor() as sql:
             sql.execute("INSERT INTO assigned_to (astro_id, sm_id) VALUES (%s, %s)", [astro_id, sm_id])
+            connection.commit()
 
     def fireAstro(sm_id, astro_id):
         with connection.cursor() as sql:
             sql.execute("DELETE FROM assigned_to WHERE astro_id=%s AND sm_id=%s", [astro_id, sm_id])
+            connection.commit()
 
     def getAssignedAstronauts(sm_id):
         with connection.cursor() as sql:
             sql.execute("SELECT * FROM astronaut WHERE astro_id IN (SELECT astro_id FROM assigned_to WHERE sm_id=%s)", [sm_id])
+            connection.commit()
             return sql.fetchall()
 
 
@@ -531,11 +567,13 @@ class Bank_Account(models.Model):
             """, [c_id, bank_account_number])
             bank_id = sql.fetchone()[0]
             sql.execute("INSERT INTO owns (bank_id, c_id) VALUES (%s, %s)", [bank_id, c_id])
+            connection.commit()
             return bank_id
 
     def getBalance(bank_id):
         with connection.cursor() as sql:
             sql.execute("SELECT bank_balance FROM bank_account WHERE bank_id=%s", [bank_id])
+            connection.commit()
             acc = sql.fetchone()
             if acc is None:
                 return None
@@ -545,6 +583,7 @@ class Bank_Account(models.Model):
     def getBankAccountId(c_id):
         with connection.cursor() as sql:
             sql.execute("SELECT bank_id FROM owns WHERE c_id=%s", [c_id])
+            connection.commit()
             res = sql.fetchone()
             if res is None:
                 return None
@@ -558,6 +597,7 @@ class Bank_Account(models.Model):
                 return None
             sql.execute("SELECT * FROM bank_account WHERE bank_id=%s", [res[0]])
             account = sql.fetchone()
+            connection.commit()
             return account
 
     def getCompanyNameById(id):
@@ -571,6 +611,7 @@ class Bank_Account(models.Model):
             # use company table to get the company name
             sql.execute("SELECT c_name FROM company WHERE c_id=%s", [res[0]])
             res = sql.fetchone()
+            connection.commit()
             if res is None:
                 return None
             return res[0]
@@ -585,6 +626,7 @@ class Bank_Account(models.Model):
             else:
                 new_balance = balance + amount
                 sql.execute("UPDATE bank_account SET bank_balance=%s WHERE bank_id=%s", [new_balance, bank_id])
+                connection.commit()
                 return True
 
 
@@ -600,6 +642,7 @@ class Transaction(models.Model):
             sql.execute("SELECT * FROM bank_account WHERE bank_account_number=%s", [sender_id])
             sender = sql.fetchone()
             sql.execute("SELECT * FROM bank_account WHERE bank_account_number=%s", [receiver_id])
+            connection.commit()
             receiver = sql.fetchone()
             if sender is None or receiver is None:
                 return False
@@ -607,9 +650,9 @@ class Transaction(models.Model):
                 sender_bank_id = sender[0]
                 receiver_bank_id = receiver[0]
                 sql.execute("INSERT INTO transaction (receiver_id, sender_id, amount) VALUES (%s, %s, %s)", [receiver_bank_id, sender_bank_id, amount])
-
-                Bank_Account.updateBalance(sender_bank_id, -amount)
-                Bank_Account.updateBalance(receiver_bank_id, amount)
+                connection.commit()
+                # Bank_Account.updateBalance(sender_bank_id, -amount)
+                # Bank_Account.updateBalance(receiver_bank_id, amount)
                 return True
             else:
                 return False
@@ -632,5 +675,6 @@ class Transaction(models.Model):
                 query += " AND amount>%s"
                 params.append(amount_greater_than)
             sql.execute(query, params)
+            connection.commit()
             return sql.fetchall()
 
