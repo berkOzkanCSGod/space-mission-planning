@@ -70,7 +70,6 @@ class Astronaut(models.Model):
                 sql.execute("INSERT INTO Astronaut (astro_email, astro_password) VALUES (%s, %s)", [aemail, apassword])
                 sql.execute("SELECT * FROM astronaut WHERE astro_email=%s", [aemail])
                 res = sql.fetchone()
-                print("res:", res)
                 astro_user = cls(
                     astro_id=res[0], 
                     astro_email=res[1],
@@ -83,8 +82,6 @@ class Astronaut(models.Model):
                     astro_experience=res[8],
                     astro_nationality=res[9]
                 )
-                print("here")
-                print("astro_user:", astro_user)
                 return astro_user        
             return res
 
@@ -200,7 +197,6 @@ class Company(models.Model):
                 sql.execute("INSERT INTO Company (c_email, c_password) VALUES (%s, %s)", [cemail, cpassword])
                 sql.execute("SELECT * FROM Company WHERE c_email=%s", [cemail])
                 res = sql.fetchone()
-                print("res:", res)
                 comp_user = cls(
                     c_id=res[0],
                     c_email=res[1],
@@ -211,12 +207,6 @@ class Company(models.Model):
                     c_country_origin=res[6]
                 )    
 
-                # create bank account for the company
-                # sql.execute("INSERT INTO Bank_Account DEFAULT VALUES RETURNING bank_id")
-                # sql.execute("SELECT LAST_INSERT_ID()")
-                # bank_id = sql.fetchone()[0]
-                # sql.execute("INSERT INTO owns (bank_id, c_id) VALUES (%s, %s)", [bank_id, comp_user.c_id])
-                print("comp_user:", comp_user)
                 return comp_user        
             return res
 
@@ -548,7 +538,6 @@ class Bank_Account(models.Model):
             sql.execute("SELECT bank_balance FROM bank_account WHERE bank_id=%s", [bank_id])
             acc = sql.fetchone()
             if acc is None:
-                print("No bank account found")
                 return None
             balance = acc[0]
             return balance
@@ -576,6 +565,7 @@ class Bank_Account(models.Model):
             # use owns table to get the company id
             sql.execute("SELECT c_id FROM owns WHERE bank_id=%s", [id])
             res = sql.fetchone()
+
             if res is None:
                 return None
             # use company table to get the company name
