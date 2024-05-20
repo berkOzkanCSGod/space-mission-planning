@@ -294,7 +294,7 @@ def space_mission(request):
     assigned_astros = list(Space_Mission.getAssignedAstronauts(sm_id))
     company_trainings = []
     company_trainings = list(Space_Mission.getRequiredTrainings(sm_id))
-    all_trainings = list(Company.getAllTrainings())
+    all_trainings = list(Space_Mission.getUnassignedTrainings(sm_id))
     print(sm_id)
     print(creator_id)
     print(user_id)

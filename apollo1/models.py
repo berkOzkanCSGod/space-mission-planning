@@ -525,6 +525,12 @@ class Space_Mission(models.Model):
             sql.execute("SELECT T.t_id, T.t_name, T.t_description FROM training T, required R WHERE R.sm_id=%s AND R.t_id = T.t_id ORDER BY T.t_id ASC", [id])
             connection.commit()
             return sql.fetchall()
+    
+    def getUnassignedTrainings(sm_id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM training WHERE t_id NOT IN (SELECT t_id FROM required WHERE sm_id=%s)", [sm_id])
+            connection.commit()
+            return sql.fetchall()
 
     def getMostExpensiveMission(): 
         with connection.cursor() as sql:
