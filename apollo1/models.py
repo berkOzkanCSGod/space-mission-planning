@@ -45,6 +45,19 @@ class Admin(models.Model):
                 return admin_user
             else:
                 return None
+    @classmethod
+    def getAllComplete(cls, id):
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM completes")
+            res = sql.fetchall()
+            connection.commit()
+            return res
+    @classmethod
+    def updateAllComplete(cls, admin_id, astro_id, training_id, status):
+        with connection.cursor() as sql:
+            sql.execute("UPDATE completes SET status = %s WHERE astro_id = %s, t_id = %s", [status, astro_id, training_id])
+            connection.commit()
+
 
 class Astronaut(models.Model):
     astro_id = models.AutoField(primary_key=True)
@@ -137,7 +150,21 @@ class Astronaut(models.Model):
             sql.execute("SELECT T.t_id, T.t_name, T.t_description, C.status FROM training T, completes C WHERE C.astro_id=%s AND C.t_id = T.t_id ORDER BY T.t_id ASC", [id])
             connection.commit()
             return sql.fetchall()
-
+    @classmethod
+    def getAllTrainings(cls, id):
+        with connection.cursor() as sql:
+            sql.execute(''' SELECT DISTINCT T.t_id, T.t_name, T.t_description FROM training T
+                            EXCEPT
+                            SELECT T.t_id, T.t_name, T.t_description FROM training T, completes C WHERE C.astro_id=%s AND C.t_id = T.t_id 
+                            ORDER BY t_id ASC
+                        ''', [id])
+            connection.commit()
+            return sql.fetchall()
+    @classmethod
+    def applyTraining(cls, a_id, t_id):
+        with connection.cursor() as sql:
+            sql.execute("INSERT INTO completes (astro_id, t_id, status) VALUES (%s, %s, 2)", [a_id, t_id])
+            connection.commit()
     @classmethod
     def getUserById(cls, id):
         with connection.cursor() as sql:

@@ -27,6 +27,7 @@ urlpatterns = [
     path("home/create_bank_account", views.create_bank_account, name='create_bank_account'),
     path("home/make_transaction", views.make_transaction, name='make_transaction'),
     path("home/transactions", views.get_filtered_transactions, name='get_filtered_transactions'),
+    path("home/update_training_status", views.update_training_status, name='update_training_status'),
 ]
 
 # urlpatterns += staticfiles_urlpatterns()

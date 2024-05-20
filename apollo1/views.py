@@ -426,10 +426,15 @@ def training_view(request):
         return HttpResponseRedirect(reverse('login'))
 
     if request.method == 'POST':
-        return HttpResponseRedirect(reverse('home'))
-    else:
+        training_id = request.POST.get('training_id')
+        Astronaut.applyTraining(user_id, training_id)
+        all_trainings = Astronaut.getAllTrainings(user_id)
         astro_trainings = Astronaut.getAstronautTrainings(user_id)
-        return render(request, "training_view.html", {'astro_trainings': astro_trainings})
+        return render(request, "training_view.html", {'astro_trainings': astro_trainings, "all_trainings": all_trainings})
+    else:
+        all_trainings = Astronaut.getAllTrainings(user_id)
+        astro_trainings = Astronaut.getAstronautTrainings(user_id)
+        return render(request, "training_view.html", {'astro_trainings': astro_trainings, "all_trainings": all_trainings})
 
 
 def get_bank_account(request):
@@ -442,6 +447,29 @@ def get_bank_account(request):
     else:
         pass
     return render(request, "bank_account.html", {'bank': bank})
+def update_training_status(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role')
+    report_type = request.GET.get('report_type')
+    if 'user_id' not in request.COOKIES:
+        return HttpResponseRedirect(reverse('login'))
+    if user_role != 'admin':
+        return HttpResponseRedirect(reverse('home'))
+    if request.method == 'GET':
+        all_completes = Admin.getAllComplete(user_id)
+        return render(request, "update_training_status.html", {'all_completes': all_completes})
+    else:
+        training_id = request.POST.get('training_id')
+        astro_id = request.POST.get('astro_id')
+        status = request.POST.get('status')
+        Admin.updateAllComplete(user_id,astro_id,training_id,status)
+        all_completes = Admin.getAllComplete(user_id)
+        return render(request, "update_training_status.html", {'all_completes': all_completes})
+    
+
+
+    
+
 
 
 def create_bank_account(request):

@@ -22,9 +22,12 @@
         <a class="navbar-brand" href="profile">Profile</a>
         <a class="navbar-brand" href="{% url 'logout' %}">Logout</a>
     </nav>
-
+    
     <div class="container bg-white rounded p-4 mt-4 mb-4">
         <h1 class="text-center">Astronaut's Trainings</h1>
+        <h1>
+            User Trainings
+        </h1>
         <table class="table">
             <thead>
                 <tr>
@@ -47,6 +50,36 @@
                     {% else %}
                         <td class="text-primary">Not Completed</td>
                     {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <h1>
+            All Trainings
+        </h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Training ID</th>
+                    <th>Training Name</th>
+                    <th>Training Description</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for training in all_trainings %}
+                <tr>
+                    <td>{{training.0}}</td>
+                    <td>{{training.1}}</td>
+                    <td>{{training.2}}</td>
+                    <td>
+                        <form action="{% url 'training_view' %}" method="post" class="d-inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" id="training_id" name="training_id" value="{{ training.0 }}" />
+                            <button type="submit" class="btn btn-secondary">Apply</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
