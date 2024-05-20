@@ -33,85 +33,55 @@
             <h3>Email: {{profile.admin_email}}</h3>
         {%elif role == "astronaut"%}
             <h3>Email: {{profile.astro_email}}</h3>
-            <form action="{% url 'update_field' %}?field=astro_name" method="post">
+            <form action="{% url 'update_field' %}" method="post">
                 {% csrf_token %}
                 <div class="form-group">
-                    <lable for="input">Name</label>
-                    <input type="text" id="input" name="input" value={{profile.astro_name}}>
-                    <button type="submit">Update</button>
+                    <label for="astro_name">Name</label>
+                    <input type="text" id="astro_name" name="astro_name" value="{{ profile.astro_name }}">
                 </div>
-            </form>
-            <form action="{% url 'update_field' %}?field=astro_age" method="post">
-                {% csrf_token %}
                 <div class="form-group">
-                    <lable for="input">Age</label>
-                    <input type="text" id="input" name="input" value={{profile.astro_age}}>
-                    <button type="submit">Update</button>
+                    <label for="astro_age">Age</label>
+                    <input type="text" id="astro_age" name="astro_age" value="{{ profile.astro_age }}">
                 </div>
-            </form>
-            <form action="{% url 'update_field' %}?field=astro_height" method="post">
-                {% csrf_token %}
                 <div class="form-group">
-                    <label for="height">Height</label>
-                    <input type="text" id="input" name="input" value="{{ profile.astro_height }}">
-                    <button type="submit">Update</button>
+                    <label for="astro_height">Height</label>
+                    <input type="text" id="astro_height" name="astro_height" value="{{ profile.astro_height }}">
                 </div>
-            </form>
-            
-            <form action="{% url 'update_field' %}?field=astro_weight" method="post">
-                {% csrf_token %}
                 <div class="form-group">
-                    <label for="weight">Weight</label>
-                    <input type="text" id="input" name="input" value="{{ profile.astro_weight }}">
-                    <button type="submit">Update</button>
+                    <label for="astro_weight">Weight</label>
+                    <input type="text" id="astro_weight" name="astro_weight" value="{{ profile.astro_weight }}">
                 </div>
-            </form>
-            
-            <form action="{% url 'update_field' %}?field=astro_experience" method="post">
-                {% csrf_token %}
                 <div class="form-group">
-                    <label for="experience">Experience</label>
-                    <select id="input" name="input" >
+                    <label for="astro_experience">Experience</label>
+                    <select id="astro_experience" name="astro_experience">
                         <option value="JR" {% if profile.astro_experience == 'JR' %}selected{% endif %}>JR</option>
                         <option value="SR" {% if profile.astro_experience == 'SR' %}selected{% endif %}>SR</option>
                         <option value="GM" {% if profile.astro_experience == 'GM' %}selected{% endif %}>GM</option>
                     </select>
-                    <button type="submit">Update</button>
                 </div>
-            </form>
-            <form action="{% url 'update_field' %}?field=astro_nationality" method="post">
-                {% csrf_token %}
                 <div class="form-group">
-                    <label for="nationality">Nationality</label>
-                    <input type="text" id="input" name="input" value="{{ profile.astro_nationality }}">
-                    <button type="submit">Update</button>
+                    <label for="astro_nationality">Nationality</label>
+                    <input type="text" id="astro_nationality" name="astro_nationality" value="{{ profile.astro_nationality }}">
                 </div>
+                <button type="submit" class="btn btn-primary">Update</button>
             </form>    
         {% elif role == "company" %}
             <h3>Email: {{profile.c_email}}</h3>
-            <form action="{% url 'update_field' %}?field=c_name" method="post">
+            <form action="{% url 'update_field' %}" method="post">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="input">Name</label>
-                    <input type="text" id="input" name="input" value={{profile.c_name}}>
-                    <button type="submit">Update</button>
+                    <label for="c_name">Name</label>
+                    <input type="text" id="c_name" name="c_name" value="{{ profile.c_name }}">
                 </div>
-            </form> 
-            <form action="{% url 'update_field' %}?field=c_emply_cnt" method="post">
-                {% csrf_token %}
                 <div class="form-group">
-                    <label for="input">Employee Count</label>
-                    <input type="text" id="input" name="input" value="{{ profile.c_emply_cnt }}">
-                    <button type="submit">Update</button>
+                    <label for="c_emply_cnt">Employee Count</label>
+                    <input type="text" id="c_emply_cnt" name="c_emply_cnt" value="{{ profile.c_emply_cnt }}">
                 </div>
-            </form>
-            <form action="{% url 'update_field' %}?field=c_country_origin" method="post">
-                {% csrf_token %}
                 <div class="form-group">
-                    <label for="input">Country of Origin</label>
-                    <input type="text" id="input" name="input" value="{{ profile.c_country_origin }}">
-                    <button type="submit">Update</button>
+                    <label for="c_country_origin">Country of Origin</label>
+                    <input type="text" id="c_country_origin" name="c_country_origin" value="{{ profile.c_country_origin }}">
                 </div>
+                <button type="submit" class="btn btn-primary">Update</button>
             </form>
 
             <div class="bank-accounts">

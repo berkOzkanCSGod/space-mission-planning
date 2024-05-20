@@ -163,9 +163,12 @@ class Astronaut(models.Model):
                 return None
 
     @classmethod
-    def updateAttribute(cls, id, field, input):
+    def updateAttribute(cls, id, fields):
+        set_clause = ", ".join([f"{field} = %s" for field in fields])
+        values = list(fields.values())
+        values.append(id)
         with connection.cursor() as sql:
-            sql.execute("UPDATE astronaut SET {} = %s WHERE astro_id = %s".format(field), [input, id])
+            sql.execute(f"UPDATE astronaut SET {set_clause} WHERE astro_id = %s", values)
             res = sql.rowcount > 0
             if res:
                 connection.commit()
@@ -262,14 +265,16 @@ class Company(models.Model):
 
 
     @classmethod
-    def updateAttribute(cls, id, field, input):
+    def updateAttribute(cls, id, fields):
+        set_clause = ", ".join([f"{field} = %s" for field in fields])
+        values = list(fields.values())
+        values.append(id)
         with connection.cursor() as sql:
-            sql.execute("UPDATE company SET {} = %s WHERE c_id = %s".format(field), [input, id])
+            sql.execute(f"UPDATE company SET {set_clause} WHERE c_id = %s", values)
             res = sql.rowcount > 0
             if res:
                 connection.commit()
                 return True
-
         return False
     
     def getCreatedMissions(id):

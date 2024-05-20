@@ -13,6 +13,7 @@ from django.http import HttpResponse
 
 import random
 
+
 @csrf_exempt
 def login(request):
     if request.method == 'POST':
@@ -52,7 +53,6 @@ def login(request):
             else:
                 error_message = 'Invalid username or password.'
                 return render(request, 'login.html', {'err_msg': error_message})
-
         
     else:
         return render(request, "login.html")
@@ -88,7 +88,6 @@ def signup(request):
         else:
             error_message = 'Invalid username or password.'
             return render(request, 'signup.html', {'err_msg': error_message})
-
 
     else:
         return render(request, "signup.html")
@@ -139,28 +138,34 @@ def profile(request):
             return render(request, "profile.html", {'profile': user, 'role': user_role})
 
     error_message = 'Issue with accessing profile'
-    return HttpResponseRedirect(reverse('home')) 
+    return HttpResponseRedirect(reverse('home'))
 
 
 def update_field(request):
     user_id = request.COOKIES.get('user_id')
     user_role = request.COOKIES.get('user_role')
-    if 'user_id' not in request.COOKIES:
-        response = HttpResponseRedirect(reverse('login'))
-        return response
-    field = request.GET.get('field')
-    input = request.POST.get('input')
 
-    print("Field:", field)
-    print("input:", input)
-    print("role:", user_role)
+    if not user_id:
+        return HttpResponseRedirect(reverse('login'))
 
-    if user_role == 'astronaut':
-        Astronaut.updateAttribute(user_id, field, input)
-        return HttpResponseRedirect(reverse('profile')) 
-    elif user_role == 'company':
-        Company.updateAttribute(user_id, field, input)
-        return HttpResponseRedirect(reverse('profile')) 
+    if request.method == 'POST':
+        fields_to_update = {}
+        for key, value in request.POST.items():
+            if key != 'csrfmiddlewaretoken' and value:
+                fields_to_update[key] = value
+
+        print("Fields to update:", fields_to_update)
+        print("Role:", user_role)
+        success = False
+        if user_role == 'astronaut':
+            success = Astronaut.updateAttribute(user_id, fields_to_update)
+        elif user_role == 'company':
+            success = Company.updateAttribute(user_id, fields_to_update)
+
+        if success:
+            return HttpResponseRedirect(reverse('profile'))
+
+    return HttpResponseRedirect(reverse('profile'))
 
 
 def dashboard(request):
@@ -388,7 +393,6 @@ def drop_training(request):
         sm_id = Space_Mission.findIdByName(mission_name)
         res = Space_Mission.dropTraining(sm_id, training_id)
     return HttpResponseRedirect(reverse('dashboard'))
-
 
 
 def user_missions(request):
