@@ -292,13 +292,16 @@ def space_mission(request):
     if is_performer:
         company_astros = list(Company.getTrainedAstronauts(sm_id, user_id))
     assigned_astros = list(Space_Mission.getAssignedAstronauts(sm_id))
+    company_trainings = []
+    company_trainings = list(Space_Mission.getRequiredTrainings(sm_id))
+    all_trainings = list(Company.getAllTrainings())
     print(sm_id)
     print(creator_id)
     print(user_id)
     print(is_creator)
     print(is_performer)
 
-    return render(request, "space_mission.html", {'mission': mission, 'bids': bids, 'performs_mission': performs_mission, "performer":performer, "is_creator": is_creator, "is_performer": is_performer, "creator":creator, "sm_trainings": sm_trainings, "company_astros": company_astros, "assigned_astros": assigned_astros})
+    return render(request, "space_mission.html", {'mission': mission, 'bids': bids, 'performs_mission': performs_mission, "performer":performer, "is_creator": is_creator, "is_performer": is_performer, "creator":creator, "sm_trainings": sm_trainings, "company_astros": company_astros, "assigned_astros": assigned_astros, "company_trainings": company_trainings, "all_trainings": all_trainings})
 
 
 def place_bid(request):
@@ -352,6 +355,38 @@ def fire_astro(request):
         astro_id = request.POST.get('astro_id')
         sm_id = Space_Mission.findIdByName(mission_name)
         res = Space_Mission.fireAstro(sm_id, astro_id)
+    return HttpResponseRedirect(reverse('dashboard'))
+
+
+def assign_training(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role') 
+    if 'user_id' not in request.COOKIES:
+        return HttpResponseRedirect(reverse('login'))
+    elif user_role != 'company':
+        return HttpResponseRedirect(reverse('home'))
+    
+    if request.method == 'POST':
+        mission_name = request.POST.get('mission_name')
+        training_id = request.POST.get('training_id')
+        sm_id = Space_Mission.findIdByName(mission_name)
+        res = Space_Mission.assignTraining(sm_id, training_id)
+    return HttpResponseRedirect(reverse('dashboard'))
+
+
+def drop_training(request):
+    user_id = request.COOKIES.get('user_id')
+    user_role = request.COOKIES.get('user_role') 
+    if 'user_id' not in request.COOKIES:
+        return HttpResponseRedirect(reverse('login'))
+    elif user_role != 'company':
+        return HttpResponseRedirect(reverse('home'))
+    
+    if request.method == 'POST':
+        mission_name = request.POST.get('mission_name')
+        training_id = request.POST.get('training_id')
+        sm_id = Space_Mission.findIdByName(mission_name)
+        res = Space_Mission.dropTraining(sm_id, training_id)
     return HttpResponseRedirect(reverse('dashboard'))
 
 

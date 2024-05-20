@@ -320,6 +320,13 @@ class Company(models.Model):
                 """, [c_id, sm_id, sm_id])
                 connection.commit()
                 return sql.fetchall()
+            
+        
+    def getAllTrainings():
+        with connection.cursor() as sql:
+            sql.execute("SELECT * FROM training")
+            connection.commit()
+            return sql.fetchall()
 
 
 class Launch_Site(models.Model):
@@ -552,6 +559,16 @@ class Space_Mission(models.Model):
             sql.execute("SELECT * FROM astronaut WHERE astro_id IN (SELECT astro_id FROM assigned_to WHERE sm_id=%s)", [sm_id])
             connection.commit()
             return sql.fetchall()
+        
+    def assignTraining(sm_id, t_id):
+        with connection.cursor() as sql:
+            sql.execute("INSERT INTO required (sm_id, t_id) VALUES (%s, %s)", [sm_id, t_id])
+            connection.commit()
+
+    def dropTraining(sm_id, t_id):
+        with connection.cursor() as sql:
+            sql.execute("DELETE FROM required WHERE sm_id=%s AND t_id=%s", [sm_id, t_id])
+            connection.commit()
 
 
 class Bank_Account(models.Model):

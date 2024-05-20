@@ -149,6 +149,46 @@
         {% endif %}
         {%endif%}
 
+        {%if is_creator and performs_mission == null%}
+        <h2 class="text-center mt-4">Assign Trainings to Mission</h2>
+        {% if all_trainings %}
+        <form method="POST" action="{% url 'assign_training' %}" class="mt-4">
+            {% csrf_token %}
+            <input type="hidden" name="mission_name" value="{{ mission.1}}">
+            <h3>Available Trainings:</h3>
+            <select name="training_id" id="training" class="form-control">
+                {% for training in all_trainings %}
+                    {% if training not in company_trainings %}
+                        <option value="{{ training.0 }}">Training ID: {{ training.0 }}, Training Name: {{ training.1 }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <input type="submit" value="Assign Training" class="btn btn-primary mt-2">
+        </form>
+        {% else %}
+        <p class="text-center mt-4">No trainings available.</p>
+        {% endif %}
+        {%endif%}
+
+        {%if is_creator and performs_mission == null%}
+        <h2 class="text-center mt-4">Drop Assigned Trainings</h2>
+        {% if company_trainings %}
+        <form method="POST" action="{% url 'drop_training' %}" class="mt-4">
+            {% csrf_token %}
+            <input type="hidden" name="mission_name" value="{{ mission.1}}">
+            <h3>Trainings assigned to mission:</h3>
+            <select name="training_id" id="training" class="form-control">
+                {% for training in company_trainings %}
+                    <option value="{{ training.0 }}">Training ID: {{ training.0 }}, Training Name: {{ training.1 }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Drop Training" class="btn btn-primary mt-2">
+        </form>
+        {% else %}
+        <p class="text-center mt-4">No trainings available.</p>
+        {% endif %}
+        {%endif%}
+
         <h1 class="text-center mt-4">Bids</h1>
         {%if bids%}
         <table class="table table-striped table-bordered mt-4">
